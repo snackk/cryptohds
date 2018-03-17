@@ -8,7 +8,7 @@ Before anything, the following requirements must be met:
 * **java 8** - Install java 8 or latest.
 * **IDE of your preference** - I prefer IntelliJ for Obvious reasons.
 
-## Running
+## Running backend
 
 To run the App on the terminal do the following:
 ```sh
@@ -17,3 +17,16 @@ $ mvn spring-boot: run
 ```
 
 On IntelliJ there's no need of maven vodu, it has a spring button to run.
+
+## Client (For the test purpose use Postman)
+
+### Register API
+  * *Type:* POST
+  * *Headers:* Content-Type: application/json
+  * *Body:* raw
+  ```
+  {
+    "name": "nopee",
+    "publicKey": "pubkey_5"
+  }
+```
