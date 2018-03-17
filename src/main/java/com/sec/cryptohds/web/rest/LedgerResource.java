@@ -1,6 +1,6 @@
 package com.sec.cryptohds.web.rest;
 
-import com.sec.cryptohds.domain.Ledger;
+import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sec.cryptohds.service.LedgerService;
@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("/api")
@@ -33,19 +31,19 @@ public class LedgerResource {
      * <p>
      * Creates a new ledger if not already used.
      *
-     * @param ledgerDTO the user to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new ledger, or with status 400 (Bad Request)
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param ledgerDTO the ledger to create
+     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
+     * @throws LedgerAlreadyExistsException is throw.
      */
     @PostMapping("/ledgers")
-    public ResponseEntity<Ledger> createLedger(@Valid @RequestBody LedgerDTO ledgerDTO) throws URISyntaxException {
+    public ResponseEntity<?> createLedger(@Valid @RequestBody LedgerDTO ledgerDTO) throws LedgerAlreadyExistsException {
         log.debug("REST request to create Ledger : {}", ledgerDTO);
 
         if (ledgerService.existsLedger(ledgerDTO)) {
-            return null;
+            throw new LedgerAlreadyExistsException(ledgerDTO.getPublicKey());
         } else {
-            Ledger newLedger = ledgerService.registerLedger(ledgerDTO);
-            return new ResponseEntity<>(newLedger, HttpStatus.OK);
+            ledgerService.registerLedger(ledgerDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 }
