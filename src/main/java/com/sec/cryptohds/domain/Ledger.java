@@ -1,9 +1,8 @@
 package com.sec.cryptohds.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Ledger {
@@ -11,12 +10,23 @@ public class Ledger {
     @Id
     @GeneratedValue
     private Long id;
+
+    private String name;
+
     private String publicKey;
 
-    public Ledger() { }
+    private Long balance;
 
-    public Ledger(String publicKey) {
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Operation> operations = new ArrayList<>();
+
+    public Ledger() {
+    }
+
+    public Ledger(String name, String publicKey) {
+        this.name = name;
         this.publicKey = publicKey;
+        this.balance = 0L;
     }
 
     public Long getId() {
@@ -35,10 +45,36 @@ public class Ledger {
         this.publicKey = publicKey;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public Long getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Long balance) {
+        this.balance = balance;
+    }
+
+    public void addOperation(Operation operation) {
+        this.operations.add(operation);
+    }
+
+    public List<Operation> getOperations() {
+        return this.operations;
+    }
+
     @Override
     public String toString() {
         return String.format(
-                "Ledger[id=%d]",
-                id);
+                "Ledger[id=%d, " +
+                "name=%s]",
+                id, name);
     }
 }

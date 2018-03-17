@@ -19,23 +19,30 @@ public class LedgerService {
     }
 
     public Ledger registerLedger(LedgerDTO ledgerDTO) {
-        Ledger ledger = new Ledger();
-        ledger.setPublicKey(ledgerDTO.getPublicKey());
+        Ledger ledger = new Ledger(ledgerDTO.getName(), ledgerDTO.getPublicKey());
 
         return ledgerRepository.save(ledger);
     }
 
     public boolean existsLedger(LedgerDTO ledgerDTO) {
-        if(this.ledgerRepository.findById(ledgerDTO.getId()) == null)
+        if(this.ledgerRepository.findLedgerByPublicKey(ledgerDTO.getPublicKey()) == null)
             return false;
         else return true;
     }
 
+    public Ledger findLedgerByPublicKey(String publicKey) {
+        return this.ledgerRepository.findLedgerByPublicKey(publicKey);
+    }
+
     public List<Ledger> findLedgers() {
-        return ledgerRepository.findAll();
+        return this.ledgerRepository.findAll();
     }
 
     public boolean existsAnyLedger() {
-        return ledgerRepository.findAll().size() > 1 ? true : false;
+        return this.ledgerRepository.findAll().size() > 1 ? true : false;
+    }
+
+    public void saveLedger(Ledger ledger) {
+        this.ledgerRepository.save(ledger);
     }
 }

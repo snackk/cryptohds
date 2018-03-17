@@ -9,3 +9,9 @@ spring:
     hibernate.ddl-auto: update
     generate-ddl: true
     show-sql: true
+
+  logging:
+    level:
+      org.springframework.web: WARN
+      guru.springframework.controllers: WARN
+      org.hibernate: WARN
