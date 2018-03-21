@@ -21,6 +21,7 @@ public class Ledger {
     private List<Operation> operations = new ArrayList<>();
 
     public Ledger() {
+        this.balance = 90L;
     }
 
     public Ledger(String name, String publicKey) {

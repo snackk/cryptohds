@@ -18,9 +18,11 @@ public class OperationDTO {
 
     private LedgerDTO origin;
 
-    public OperationDTO(LedgerDTO origin, OperationType operationType, Long value) {
+    private LedgerDTO destination;
+
+    public OperationDTO(LedgerDTO origin, LedgerDTO destination, Long value) {
         this.origin = origin;
-        this.type = operationType;
+        this.destination = destination;
         this.value = value;
     }
 
@@ -70,5 +72,13 @@ public class OperationDTO {
 
     public void setOrigin(LedgerDTO origin) {
         this.origin = origin;
+    }
+
+    public LedgerDTO getDestination() {
+        return destination;
+    }
+
+    public void setDestination(LedgerDTO destination) {
+        this.destination = destination;
     }
 }

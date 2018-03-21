@@ -25,17 +25,16 @@ public class LedgerService {
     }
     
     
-    public Long getbalancefromLedger(String pubKey) { //TODO
+    public Long getBalanceFromLedger(String pubKey) {
     	return findLedgerByPublicKey(pubKey).getBalance();
     }
     
-    public List<Operation> getOperationsFromLedger(String pubKey) { //TODO
-    	return findLedgerByPublicKey(pubKey).getOperations();
+    public List<Operation> getOperationsFromLedger(String pubKey) {
+    	Ledger led = findLedgerByPublicKey(pubKey);
+    	return led.getOperations();
     
     }
-    
-    
-    
+
     public boolean existsLedger(LedgerDTO ledgerDTO) {
         if(this.ledgerRepository.findLedgerByPublicKey(ledgerDTO.getPublicKey()) == null)
             return false;

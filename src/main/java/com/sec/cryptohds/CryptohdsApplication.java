@@ -14,6 +14,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import javax.transaction.Transactional;
+
 @SpringBootApplication
 public class CryptohdsApplication {
 
@@ -37,12 +39,10 @@ public class CryptohdsApplication {
 				ledgerService.registerLedger(new LedgerDTO("name_8", "pubkey_8"));
 				ledgerService.registerLedger(new LedgerDTO("name_9", "pubkey_9"));
 				ledgerService.registerLedger(new LedgerDTO("name_10", "pubkey_10"));
-				
-				
-				ledgerService.getbalancefromLedger("pubKey_1");//TODO
 
-				LedgerDTO ledgerDTO = new LedgerDTO("pubkey_1");
-				operationService.createOperation(new OperationDTO(ledgerDTO, OperationType.INCOMING, 1L));
+				LedgerDTO origin = new LedgerDTO("pubkey_1");
+				LedgerDTO destination = new LedgerDTO("pubkey_10");
+				operationService.createOperation(new OperationDTO(origin, destination,10L));
 			}
 
 			log.info("Ledgers found with findLedgers():");

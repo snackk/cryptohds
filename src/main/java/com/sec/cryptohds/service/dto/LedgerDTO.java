@@ -26,7 +26,7 @@ public class LedgerDTO {
     public LedgerDTO(String name, String publicKey) {
         this.publicKey = publicKey;
         this.name = name;
-        this.balance = 90L; //TODO
+        this.balance = 90L;
     }
 
     public Long getId() {

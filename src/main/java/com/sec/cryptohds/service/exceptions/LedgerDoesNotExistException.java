@@ -2,7 +2,7 @@ package com.sec.cryptohds.service.exceptions;
 
 public class LedgerDoesNotExistException extends CryptohdsException {
 
-    public LedgerDoesNotExistException() {
-    	super("Ledger does not exists!");
+    public LedgerDoesNotExistException(String publicKey) {
+		super("Ledger with Public Key: " + publicKey + " does not exists!");
 	}
 }

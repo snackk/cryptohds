@@ -4,6 +4,7 @@ import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.service.OperationService;
 import com.sec.cryptohds.service.dto.LedgerDTO;
 import com.sec.cryptohds.service.dto.OperationDTO;
+import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 
@@ -38,38 +39,37 @@ public class OperationResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/operations")
-    public ResponseEntity<Operation> createOperation(@Valid @RequestBody OperationDTO operationDTO) throws URISyntaxException {
+    public ResponseEntity<Operation> createOperation(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
         log.debug("REST request to create Operation : {}", operationDTO);
 
-        Operation operation = operationService.createOperation(operationDTO);
-        return new ResponseEntity<>(operation, HttpStatus.OK);
+        if (!operationService.getLedgerService().existsLedger(operationDTO.getOrigin())) {
+            throw new LedgerDoesNotExistException(operationDTO.getOrigin().getPublicKey());
+        } else {
+            operationService.createOperation(operationDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
-    
-    
+
+
     /**
-     * POST  /sendAmount : Creates a new operation and associates it with the ledger.
+     * POST  /operations  : Creates a new operation.
      * <p>
-     * 
+     * Creates a new operations.
      *
-     * @param ledgerDTO the ledger/operation.
-     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
-     * @throws LedgerDoesNotExist is thrown.
+     * @param operationDTO the user to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new ledger, or with status 400 (Bad Request)
+     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    
     @PostMapping("/sendAmount")
-    public ResponseEntity<?> sendAmount(@Valid @RequestBody OperationDTO operationDTO) throws LedgerDoesNotExistException {
+    public ResponseEntity<?> sendAmount(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
         log.debug("REST request to send amount to Ledger : {}", operationDTO);
 
-        if (operationService.getLedgerService().existsLedger(operationDTO.getOrigin())) {
-        	 throw new LedgerAlreadyExistsException(operationDTO.getOrigin().getPublicKey());
+        if (!operationService.getLedgerService().existsLedger(operationDTO.getOrigin())) {
+        	 throw new LedgerDoesNotExistException(operationDTO.getOrigin().getPublicKey());
         } else {
-        	//TODO igualzinha a de cima, useless
         	operationService.createOperation(operationDTO);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-    
-   
-    
 }
 
