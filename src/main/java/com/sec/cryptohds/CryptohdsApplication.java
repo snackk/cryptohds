@@ -37,6 +37,9 @@ public class CryptohdsApplication {
 				ledgerService.registerLedger(new LedgerDTO("name_8", "pubkey_8"));
 				ledgerService.registerLedger(new LedgerDTO("name_9", "pubkey_9"));
 				ledgerService.registerLedger(new LedgerDTO("name_10", "pubkey_10"));
+				
+				
+				ledgerService.getbalancefromLedger("pubKey_1");//TODO
 
 				LedgerDTO ledgerDTO = new LedgerDTO("pubkey_1");
 				operationService.createOperation(new OperationDTO(ledgerDTO, OperationType.INCOMING, 1L));
