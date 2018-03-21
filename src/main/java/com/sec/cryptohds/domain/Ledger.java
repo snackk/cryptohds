@@ -26,7 +26,7 @@ public class Ledger {
     public Ledger(String name, String publicKey) {
         this.name = name;
         this.publicKey = publicKey;
-        this.balance = 0L;
+        this.balance = 90L;
     }
 
     public Long getId() {

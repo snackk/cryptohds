@@ -1,6 +1,7 @@
 package com.sec.cryptohds.service;
 
 import com.sec.cryptohds.domain.Ledger;
+import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.repository.LedgerRepository;
 import com.sec.cryptohds.service.dto.LedgerDTO;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,21 @@ public class LedgerService {
 
     public Ledger registerLedger(LedgerDTO ledgerDTO) {
         Ledger ledger = new Ledger(ledgerDTO.getName(), ledgerDTO.getPublicKey());
-
         return ledgerRepository.save(ledger);
     }
-
+    
+    
+    public Long getbalancefromLedger(String pubKey) { //TODO
+    	return findLedgerByPublicKey(pubKey).getBalance();
+    }
+    
+    public List<Operation> getOperationsFromLedger(String pubKey) { //TODO
+    	return findLedgerByPublicKey(pubKey).getOperations();
+    
+    }
+    
+    
+    
     public boolean existsLedger(LedgerDTO ledgerDTO) {
         if(this.ledgerRepository.findLedgerByPublicKey(ledgerDTO.getPublicKey()) == null)
             return false;
@@ -45,4 +57,6 @@ public class LedgerService {
     public void saveLedger(Ledger ledger) {
         this.ledgerRepository.save(ledger);
     }
+    
+   
 }

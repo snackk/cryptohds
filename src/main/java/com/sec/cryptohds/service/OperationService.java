@@ -14,7 +14,13 @@ public class OperationService {
     private final OperationRepository operationRepository;
 
     private final LedgerService ledgerService;
+    
+    
+    public LedgerService getLedgerService() { //TODO
+    	return ledgerService;
+    }
 
+    
     public OperationService(OperationRepository operationRepository, LedgerService ledgerService) {
         this.operationRepository = operationRepository;
         this.ledgerService = ledgerService;
@@ -31,4 +37,6 @@ public class OperationService {
 
         return operation;
     }
+    
+    
 }

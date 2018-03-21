@@ -2,7 +2,11 @@ package com.sec.cryptohds.web.rest;
 
 import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.service.OperationService;
+import com.sec.cryptohds.service.dto.LedgerDTO;
 import com.sec.cryptohds.service.dto.OperationDTO;
+import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
+import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -40,5 +44,32 @@ public class OperationResource {
         Operation operation = operationService.createOperation(operationDTO);
         return new ResponseEntity<>(operation, HttpStatus.OK);
     }
+    
+    
+    /**
+     * POST  /sendAmount : Creates a new operation and associates it with the ledger.
+     * <p>
+     * 
+     *
+     * @param ledgerDTO the ledger/operation.
+     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
+     * @throws LedgerDoesNotExist is thrown.
+     */
+    
+    @PostMapping("/sendAmount")
+    public ResponseEntity<?> sendAmount(@Valid @RequestBody OperationDTO operationDTO) throws LedgerDoesNotExistException {
+        log.debug("REST request to send amount to Ledger : {}", operationDTO);
+
+        if (operationService.getLedgerService().existsLedger(operationDTO.getOrigin())) {
+        	 throw new LedgerAlreadyExistsException(operationDTO.getOrigin().getPublicKey());
+        } else {
+        	//TODO igualzinha a de cima, useless
+        	operationService.createOperation(operationDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
+   
+    
 }
 
