@@ -20,13 +20,24 @@ On IntelliJ there's no need of maven vodu, it has a spring button to run.
 
 ## Client (For the test purpose use Postman)
 
-### Register API
+## Ledger API
+### Register 
   * *Type:* POST
   * *Headers:* Content-Type: application/json
   * *Body:* raw
   ```
   {
     "name": "nopee",
+    "publicKey": "pubkey_5"
+  }
+```
+
+### Balance
+  * *Type:* POST
+  * *Headers:* Content-Type: application/json
+  * *Body:* raw
+  ```
+  {
     "publicKey": "pubkey_5"
   }
 ```

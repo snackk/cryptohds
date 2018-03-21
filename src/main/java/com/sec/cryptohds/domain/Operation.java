@@ -23,13 +23,13 @@ public class Operation {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ledger_id")
-    private Ledger origin;
+    private Ledger ledger;
 
     public Operation() {
     }
 
-    public Operation(Ledger origin, OperationType operationType, Long value) {
-        this.origin = origin;
+    public Operation(Ledger ledger, OperationType operationType, Long value) {
+        this.ledger = ledger;
         this.type = operationType;
         this.value = value;
     }
@@ -74,12 +74,13 @@ public class Operation {
         this.type = type;
     }
 
-    public Ledger getOrigin() {
-        return origin;
+
+    public Ledger getLedger() {
+        return ledger;
     }
 
-    public void setOrigin(Ledger origin) {
-        this.origin = origin;
+    public void setLedger(Ledger ledger) {
+        this.ledger = ledger;
     }
 
     @Override
@@ -98,6 +99,6 @@ public class Operation {
 
     @Override
     public int hashCode() {
-        return 42;
+        return this.getId().hashCode();
     }
 }
