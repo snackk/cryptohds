@@ -22,6 +22,7 @@ On IntelliJ there's no need of maven vodu, it has a spring button to run.
 
 ## Ledger API
 ### Register 
+  * *endpoint:* /api/ledgers
   * *Type:* POST
   * *Headers:* Content-Type: application/json
   * *Body:* raw
@@ -33,11 +34,17 @@ On IntelliJ there's no need of maven vodu, it has a spring button to run.
 ```
 
 ### Balance
-  * *Type:* POST
+  * *endpoint:* /api/ledger/balance
+  * *Type:* GET
   * *Headers:* Content-Type: application/json
-  * *Body:* raw
-  ```
-  {
-    "publicKey": "pubkey_5"
-  }
-```
+  * *Parameters:* 
+    * *key:* publicKey 
+    * *value:* pubkey_1 
+    
+### Audit
+  * *endpoint:* /api/ledger/audit
+  * *Type:* GET
+  * *Headers:* Content-Type: application/json
+  * *Parameters:* 
+    * *key:* publicKey 
+    * *value:* pubkey_1 

@@ -35,8 +35,8 @@ public class LedgerService {
     
     }
 
-    public boolean existsLedger(LedgerDTO ledgerDTO) {
-        if(this.ledgerRepository.findLedgerByPublicKey(ledgerDTO.getPublicKey()) == null)
+    public boolean existsLedger(String publicKey) {
+        if(this.ledgerRepository.findLedgerByPublicKey(publicKey) == null)
             return false;
         else return true;
     }
