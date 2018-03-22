@@ -1,5 +1,7 @@
 package com.sec.cryptohds.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,7 @@ public class Ledger {
 
     private Long balance;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "ledger")
     private List<Operation> operations = new ArrayList<>();
 
     public Ledger() {
@@ -67,6 +69,7 @@ public class Ledger {
         this.operations.add(operation);
     }
 
+    @JsonIgnore
     public List<Operation> getOperations() {
         return this.operations;
     }
