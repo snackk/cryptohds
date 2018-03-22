@@ -15,9 +15,7 @@ public class LedgerDTO {
 
     private List<OperationDTO> operations = new ArrayList<>();
 
-    public LedgerDTO() {
-
-    }
+    public LedgerDTO() {}
 
     public LedgerDTO(String publicKey) {
         this.publicKey = publicKey;

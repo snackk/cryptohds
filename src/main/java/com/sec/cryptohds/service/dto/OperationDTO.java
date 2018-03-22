@@ -16,13 +16,15 @@ public class OperationDTO {
 
     private OperationType type;
 
-    private LedgerDTO origin;
+    private String originPublicKey;
 
-    private LedgerDTO destination;
+    private String destinationPublicKey;
 
-    public OperationDTO(LedgerDTO origin, LedgerDTO destination, Long value) {
-        this.origin = origin;
-        this.destination = destination;
+    public OperationDTO() {}
+
+    public OperationDTO(String originPublicKey, String destinationPublicKey, Long value) {
+        this.originPublicKey = originPublicKey;
+        this.destinationPublicKey = destinationPublicKey;
         this.value = value;
     }
 
@@ -66,19 +68,19 @@ public class OperationDTO {
         this.type = type;
     }
 
-    public LedgerDTO getOrigin() {
-        return origin;
+    public String getOriginPublicKey() {
+        return originPublicKey;
     }
 
-    public void setOrigin(LedgerDTO origin) {
-        this.origin = origin;
+    public void setOriginPublicKey(String originPublicKey) {
+        this.originPublicKey = originPublicKey;
     }
 
-    public LedgerDTO getDestination() {
-        return destination;
+    public String getDestinationPublicKey() {
+        return destinationPublicKey;
     }
 
-    public void setDestination(LedgerDTO destination) {
-        this.destination = destination;
+    public void setDestinationPublicKey(String destinationPublicKey) {
+        this.destinationPublicKey = destinationPublicKey;
     }
 }

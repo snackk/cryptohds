@@ -2,7 +2,6 @@ package com.sec.cryptohds;
 
 import com.sec.cryptohds.domain.Ledger;
 import com.sec.cryptohds.domain.Operation;
-import com.sec.cryptohds.domain.OperationType;
 import com.sec.cryptohds.service.LedgerService;
 import com.sec.cryptohds.service.OperationService;
 import com.sec.cryptohds.service.dto.LedgerDTO;
@@ -13,8 +12,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import javax.transaction.Transactional;
 
 @SpringBootApplication
 public class CryptohdsApplication {
@@ -40,9 +37,7 @@ public class CryptohdsApplication {
 				ledgerService.registerLedger(new LedgerDTO("name_9", "pubkey_9"));
 				ledgerService.registerLedger(new LedgerDTO("name_10", "pubkey_10"));
 
-				LedgerDTO origin = new LedgerDTO("pubkey_1");
-				LedgerDTO destination = new LedgerDTO("pubkey_10");
-				operationService.createOperation(new OperationDTO(origin, destination,10L));
+				operationService.createOperation(new OperationDTO("pubkey_1", "pubkey_10",10L));
 			}
 
 			log.info("Ledgers found with findLedgers():");
