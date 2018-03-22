@@ -50,7 +50,7 @@ public class CryptohdsApplication {
 			for (Ledger ledger : ledgerService.findLedgers()) {
 				log.info(ledger.toString());
 				for (Operation operation: ledger.getOperations()) {
-					log.info("    ->Operation ID: " + operation.toString());
+					log.info("    ->" + operation.toString());
 				}
 			}
 			log.info("-------------------------------");

@@ -30,8 +30,7 @@ public class LedgerService {
     }
     
     public List<Operation> getOperationsFromLedger(String pubKey) {
-    	Ledger led = findLedgerByPublicKey(pubKey);
-    	return led.getOperations();
+    	return findLedgerByPublicKey(pubKey).getOperations();
     
     }
 
