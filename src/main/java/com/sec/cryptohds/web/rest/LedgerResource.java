@@ -9,10 +9,7 @@ import com.sec.cryptohds.service.LedgerService;
 import com.sec.cryptohds.service.dto.LedgerDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -35,13 +32,13 @@ public class LedgerResource {
      *
      * @param ledgerDTO the ledger to create
      * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
-     * @throws LedgerAlreadyExistsException is throw.
+     * @throws LedgerAlreadyExistsException
      */
     @PostMapping("/ledgers")
     public ResponseEntity<?> createLedger(@Valid @RequestBody LedgerDTO ledgerDTO) throws LedgerAlreadyExistsException {
         log.debug("REST request to create Ledger : {}", ledgerDTO);
 
-        if (ledgerService.existsLedger(ledgerDTO)) {
+        if (ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
             throw new LedgerAlreadyExistsException(ledgerDTO.getPublicKey());
         } else {
             ledgerService.registerLedger(ledgerDTO);
@@ -49,44 +46,44 @@ public class LedgerResource {
         }
     }
     
-    
+
     /**
      * GET  /ledger/balance  : Returns balance of ledger.
      * <p>
      * Returns balance of ledger if it exists.
      *
-     * @param ledgerDTO the ledger needed to extract the balance
-     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
-     * @throws LedgerDoesNotExistException is throw.
+     * @param publicKey the public key of the ledger
+     * @return the ResponseEntity with status 200 and the balance on the body or with status 500 (Bad Request) if
+     * @throws LedgerDoesNotExistException
      */
-    @PostMapping("/ledger/balance")
-    public ResponseEntity<?> checkBalance(@Valid @RequestBody LedgerDTO ledgerDTO) throws LedgerDoesNotExistException {
-        log.debug("REST request to check Ledger's balance : {}", ledgerDTO);
+    @GetMapping("/ledger/balance")
+    public ResponseEntity<?> checkBalance(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException {
+        log.debug("REST request to check Ledger's balance : {}", publicKey);
 
-        if (!(ledgerService.existsLedger(ledgerDTO))) {
-            throw new LedgerDoesNotExistException(ledgerDTO.getPublicKey());
+        if (!ledgerService.existsLedger(publicKey)) {
+            throw new LedgerDoesNotExistException(publicKey);
         } else {
-            return new ResponseEntity<>(ledgerService.getBalanceFromLedger(ledgerDTO.getPublicKey()), HttpStatus.OK);
+            return new ResponseEntity<>(ledgerService.getBalanceFromLedger(publicKey), HttpStatus.OK);
         }
     }
-    
+
     /**
      * GET  /ledger/audit  : Return all operations of a ledger.
      * <p>
      * Returns List <OperationDTO> with all operations.
      *
-     * @param ledgerDTO the ledger needed to extract the balance
-     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
-     * @throws LedgerDoesNotExistException is throw.
+     * @param publicKey the public key of the ledger
+     * @return the ResponseEntity with status 200 and the List <OperationDTO> on the body or with status 500 (Bad Request) if
+     * @throws LedgerDoesNotExistException
      */
-    @PostMapping("/ledger/audit")
-    public ResponseEntity<?> audit(@Valid @RequestBody LedgerDTO ledgerDTO) throws LedgerDoesNotExistException {
-        log.debug("REST request to check Ledger's operations : {}", ledgerDTO);
+    @GetMapping("/ledger/audit")
+    public ResponseEntity<?> audit(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException {
+        log.debug("REST request to check Ledger's operations : {}", publicKey);
 
-        if (!(ledgerService.existsLedger(ledgerDTO))) {
-            throw new LedgerDoesNotExistException(ledgerDTO.getPublicKey());
+        if (!ledgerService.existsLedger(publicKey)) {
+            throw new LedgerDoesNotExistException(publicKey);
         } else {
-            return new ResponseEntity<>(ledgerService.getOperationsFromLedger(ledgerDTO.getPublicKey()), HttpStatus.OK);
+            return new ResponseEntity<>(ledgerService.getOperationsFromLedger(publicKey), HttpStatus.OK);
         }
     }
 }
