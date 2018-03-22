@@ -29,19 +29,22 @@ public class OperationService {
     }
 
     public void createOperation(OperationDTO operationDTO) throws CryptohdsException {
-        Ledger origin = ledgerService.findLedgerByPublicKey(operationDTO.getOrigin().getPublicKey());
-        Ledger destination = ledgerService.findLedgerByPublicKey(operationDTO.getDestination().getPublicKey());
+        Ledger origin = ledgerService.findLedgerByPublicKey(operationDTO.getOriginPublicKey());
+        Ledger destination = ledgerService.findLedgerByPublicKey(operationDTO.getDestinationPublicKey());
 
         if(origin == null) {
-            throw new LedgerDoesNotExistException(operationDTO.getOrigin().getPublicKey());
+            throw new LedgerDoesNotExistException(operationDTO.getOriginPublicKey());
         }
         if(destination == null) {
-            throw new LedgerDoesNotExistException(operationDTO.getDestination().getPublicKey());
+            throw new LedgerDoesNotExistException(operationDTO.getDestinationPublicKey());
         }
         Long ledgerDebt = 0L;
         for(Operation op : origin.getOperations()) {
             if(!op.getCommitted()) {
-                ledgerDebt += op.getValue();
+                if(op.getType().equals(OperationType.OUTCOMING))
+                    ledgerDebt += op.getValue();
+                if(op.getType().equals(OperationType.INCOMING))
+                    ledgerDebt -= op.getValue();
             }
         }
         if(origin.getBalance() <= operationDTO.getValue() || origin.getBalance() <= ledgerDebt) {

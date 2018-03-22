@@ -42,12 +42,8 @@ public class OperationResource {
     public ResponseEntity<Operation> createOperation(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
         log.debug("REST request to create Operation : {}", operationDTO);
 
-        if (!operationService.getLedgerService().existsLedger(operationDTO.getOrigin().getPublicKey())) {
-            throw new LedgerDoesNotExistException(operationDTO.getOrigin().getPublicKey());
-        } else {
-            operationService.createOperation(operationDTO);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+        operationService.createOperation(operationDTO);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
@@ -64,8 +60,8 @@ public class OperationResource {
     public ResponseEntity<?> sendAmount(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
         log.debug("REST request to send amount to Ledger : {}", operationDTO);
 
-        if (!operationService.getLedgerService().existsLedger(operationDTO.getOrigin().getPublicKey())) {
-        	 throw new LedgerDoesNotExistException(operationDTO.getOrigin().getPublicKey());
+        if (!operationService.getLedgerService().existsLedger(operationDTO.getOriginPublicKey())) {
+        	 throw new LedgerDoesNotExistException(operationDTO.getOriginPublicKey());
         } else {
         	operationService.createOperation(operationDTO);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

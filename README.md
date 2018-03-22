@@ -48,3 +48,17 @@ On IntelliJ there's no need of maven vodu, it has a spring button to run.
   * *Parameters:* 
     * *key:* publicKey 
     * *value:* pubkey_1 
+    
+## Operation API
+### Create 
+  * *endpoint:* /api/operations
+  * *Type:* POST
+  * *Headers:* Content-Type: application/json
+  * *Body:* raw
+  ```
+{
+    "originPublicKey": "pubkey_1",
+    "destinationPublicKey": "pubkey_10",
+    "value": "100"
+}
+```    
