@@ -3,11 +3,13 @@ package com.sec.cryptohds.service;
 import com.sec.cryptohds.domain.Ledger;
 import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.repository.LedgerRepository;
+import com.sec.cryptohds.service.dto.LedgerBalanceDTO;
 import com.sec.cryptohds.service.dto.LedgerDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,9 +26,11 @@ public class LedgerService {
         return ledgerRepository.save(ledger);
     }
     
-    
-    public Long getBalanceFromLedger(String pubKey) {
-    	return findLedgerByPublicKey(pubKey).getBalance();
+    public LedgerBalanceDTO getBalanceFromLedger(String publicKey) {
+        List<Operation> operations = getOperationsFromLedger(publicKey);
+        List<Operation> uncommittedOperations = operations.stream().filter(operation -> !operation.getCommitted()).collect(Collectors.toList());
+
+        return new LedgerBalanceDTO(findLedgerByPublicKey(publicKey).getBalance(), uncommittedOperations);
     }
     
     public List<Operation> getOperationsFromLedger(String pubKey) {
@@ -55,6 +59,4 @@ public class LedgerService {
     public void saveLedger(Ledger ledger) {
         this.ledgerRepository.save(ledger);
     }
-    
-   
 }

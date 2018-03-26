@@ -5,11 +5,16 @@ import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.domain.OperationType;
 import com.sec.cryptohds.repository.OperationRepository;
 import com.sec.cryptohds.service.dto.OperationDTO;
+import com.sec.cryptohds.service.dto.ReceiveOperationDTO;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 import com.sec.cryptohds.service.exceptions.LedgerHasNoFundsException;
+import com.sec.cryptohds.service.exceptions.OperationDoesNotExistException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -18,10 +23,6 @@ public class OperationService {
     private final OperationRepository operationRepository;
 
     private final LedgerService ledgerService;
-    
-    public LedgerService getLedgerService() {
-    	return ledgerService;
-    }
 
     public OperationService(OperationRepository operationRepository, LedgerService ledgerService) {
         this.operationRepository = operationRepository;
@@ -54,13 +55,35 @@ public class OperationService {
         Operation operationDest = new Operation(origin, OperationType.INCOMING, operationDTO.getValue());
         Operation operationOri = new Operation(destination, OperationType.OUTCOMING, operationDTO.getValue());
 
-        operationDest = operationRepository.save(operationDest);
         operationOri = operationRepository.save(operationOri);
+        operationDest = operationRepository.save(operationDest);
 
         origin.addOperation(operationOri);
         destination.addOperation(operationDest);
 
         this.ledgerService.saveLedger(origin);
         this.ledgerService.saveLedger(destination);
+    }
+
+    public void receiveOperation(ReceiveOperationDTO receiveOperationDTO) throws OperationDoesNotExistException {
+        Ledger ledger = ledgerService.findLedgerByPublicKey(receiveOperationDTO.getPublicKey());
+        List<Operation> committedOperations = ledger.getOperations().stream().filter(operation -> operation.getId().equals(receiveOperationDTO.getOperationId())).collect(Collectors.toList());
+
+        if(committedOperations == null || (committedOperations != null && committedOperations.size() == 0)) {
+            throw new OperationDoesNotExistException(receiveOperationDTO.getOperationId());
+        }
+
+        ledger.getOperations().forEach(operation -> {
+            if(operation.getId().equals(receiveOperationDTO.getOperationId())) {
+                operation.setCommitted(true);
+                ledger.setBalance(ledger.getBalance() + operation.getValue());
+
+//                origin = ledgerService.findLedgerByPublicKey(operation.getLedger().getPublicKey());
+//                origin.setBalance(origin.getBalance() - operation.getValue());
+//                this.ledgerService.saveLedger(origin);
+                return;
+            }
+        });
+        this.ledgerService.saveLedger(ledger);
     }
 }

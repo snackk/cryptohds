@@ -1,6 +1,7 @@
 package com.sec.cryptohds.web.rest;
 
 import com.sec.cryptohds.domain.Operation;
+import com.sec.cryptohds.service.dto.LedgerBalanceDTO;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")

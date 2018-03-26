@@ -19,7 +19,7 @@ public class Ledger {
 
     private Long balance;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "ledger")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Operation> operations = new ArrayList<>();
 
     public Ledger() {
@@ -77,8 +77,9 @@ public class Ledger {
     @Override
     public String toString() {
         return String.format(
-                "Ledger[id=%d, " +
+                "Ledger[pubKey=%s, " +
+                "id=%d, " +
                 "name=%s]",
-                id, name);
+                publicKey, id, name);
     }
 }
