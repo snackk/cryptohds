@@ -4,6 +4,7 @@ import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.service.OperationService;
 import com.sec.cryptohds.service.dto.LedgerDTO;
 import com.sec.cryptohds.service.dto.OperationDTO;
+import com.sec.cryptohds.service.dto.ReceiveOperationDTO;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
@@ -30,17 +31,17 @@ public class OperationResource {
     }
 
     /**
-     * POST  /operations  : Creates a new operation.
+     * POST  /operation/send  : Sends an amount from destination to source.
      * <p>
-     * Creates a new operations.
+     * Sends an amount from destination to source.
      *
-     * @param operationDTO the user to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new ledger, or with status 400 (Bad Request)
+     * @param operationDTO the operation to create
+     * @return the ResponseEntity with status 201 (Created) and with body the operation, or with status 400 (Bad Request)
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping("/operations")
-    public ResponseEntity<Operation> createOperation(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
-        log.debug("REST request to create Operation : {}", operationDTO);
+    @PostMapping("/operation/send")
+    public ResponseEntity<?> sendOperation(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
+        log.debug("REST request to send Operation : {}", operationDTO);
 
         operationService.createOperation(operationDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -48,24 +49,20 @@ public class OperationResource {
 
 
     /**
-     * POST  /operations  : Creates a new operation.
+     * POST  /operation/receive  : Receives an amount from source.
      * <p>
-     * Creates a new operations.
+     * Receives an amount from source.
      *
-     * @param operationDTO the user to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new ledger, or with status 400 (Bad Request)
+     * @param receiveOperationDTO the operation to receive
+     * @return the ResponseEntity with status 201 (Received) and with body the operation, or with status 400 (Bad Request)
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping("/sendAmount")
-    public ResponseEntity<?> sendAmount(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
-        log.debug("REST request to send amount to Ledger : {}", operationDTO);
+    @PostMapping("/operation/receive")
+    public ResponseEntity<?> receiveOperation(@Valid @RequestBody ReceiveOperationDTO receiveOperationDTO) throws CryptohdsException {
+        log.debug("REST request to receive Operation : {}", receiveOperationDTO);
 
-        if (!operationService.getLedgerService().existsLedger(operationDTO.getOriginPublicKey())) {
-        	 throw new LedgerDoesNotExistException(operationDTO.getOriginPublicKey());
-        } else {
-        	operationService.createOperation(operationDTO);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+        operationService.receiveOperation(receiveOperationDTO);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
 

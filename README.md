@@ -50,8 +50,8 @@ On IntelliJ there's no need of maven vodu, it has a spring button to run.
     * *value:* pubkey_1 
     
 ## Operation API
-### Create 
-  * *endpoint:* /api/operations
+### Send 
+  * *endpoint:* /api/operation/send
   * *Type:* POST
   * *Headers:* Content-Type: application/json
   * *Body:* raw
@@ -62,3 +62,15 @@ On IntelliJ there's no need of maven vodu, it has a spring button to run.
     "value": "100"
 }
 ```    
+
+### Receive 
+  * *endpoint:* /api/operation/receive
+  * *Type:* POST
+  * *Headers:* Content-Type: application/json
+  * *Body:* raw
+  ```
+{
+    "publicKey": "pubkey_10",
+    "operationId": "101"
+}
+```
