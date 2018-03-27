@@ -21,6 +21,8 @@ public class Operation {
 
     private OperationType type;
 
+    private Long originOperationID;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ledger_id")
     private Ledger ledger;
@@ -88,6 +90,14 @@ public class Operation {
         return String.format(
                 "Operation[id=%d]",
                 id);
+    }
+
+    public Long getOriginOperationID() {
+        return originOperationID;
+    }
+
+    public void setOriginOperationID(Long originOperationID) {
+        this.originOperationID = originOperationID;
     }
 
     @Override

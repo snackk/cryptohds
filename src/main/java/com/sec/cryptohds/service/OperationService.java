@@ -56,6 +56,7 @@ public class OperationService {
         Operation operationOri = new Operation(destination, OperationType.OUTCOMING, operationDTO.getValue());
 
         operationOri = operationRepository.save(operationOri);
+        operationDest.setOriginOperationID(operationOri.getId());
         operationDest = operationRepository.save(operationDest);
 
         origin.addOperation(operationOri);
@@ -69,21 +70,26 @@ public class OperationService {
         Ledger ledger = ledgerService.findLedgerByPublicKey(receiveOperationDTO.getPublicKey());
         List<Operation> committedOperations = ledger.getOperations().stream().filter(operation -> operation.getId().equals(receiveOperationDTO.getOperationId())).collect(Collectors.toList());
 
-        if(committedOperations == null || (committedOperations != null && committedOperations.size() == 0)) {
+        if (committedOperations == null || (committedOperations != null && committedOperations.size() < 1)) {
             throw new OperationDoesNotExistException(receiveOperationDTO.getOperationId());
         }
 
-        ledger.getOperations().forEach(operation -> {
-            if(operation.getId().equals(receiveOperationDTO.getOperationId())) {
-                operation.setCommitted(true);
-                ledger.setBalance(ledger.getBalance() + operation.getValue());
+        for (Operation op : ledger.getOperations()) {
+            if (op.getId().equals(receiveOperationDTO.getOperationId())) {
+                op.setCommitted(true);
 
-//                origin = ledgerService.findLedgerByPublicKey(operation.getLedger().getPublicKey());
-//                origin.setBalance(origin.getBalance() - operation.getValue());
-//                this.ledgerService.saveLedger(origin);
-                return;
+                Operation originOperation = operationRepository.findOperationById(op.getOriginOperationID());
+                originOperation.setCommitted(true);
+
+                ledger.setBalance(ledger.getBalance() + op.getValue());
+
+                Ledger origin = ledgerService.findLedgerByPublicKey(op.getLedger().getPublicKey());
+                origin.setBalance(origin.getBalance() - op.getValue());
+                this.ledgerService.saveLedger(origin);
+
+
             }
-        });
-        this.ledgerService.saveLedger(ledger);
+            this.ledgerService.saveLedger(ledger);
+        }
     }
 }
