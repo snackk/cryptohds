@@ -1,13 +1,9 @@
 package com.sec.cryptohds.web.rest;
 
-import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.service.OperationService;
-import com.sec.cryptohds.service.dto.LedgerDTO;
 import com.sec.cryptohds.service.dto.OperationDTO;
 import com.sec.cryptohds.service.dto.ReceiveOperationDTO;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
-import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
-import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
