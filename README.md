@@ -3,10 +3,13 @@
 ## Overview
 
 Before anything, the following requirements must be met:
+* **cryptohdsLibrary** - You've got to have the library locally installed for this to work. You can find the steps to install it here [cryptohdsLibrary](https://github.com/snackk/cryptohdsLibrary).
 * **mysql server** - Server must be up and running with username *root* and password *cryptohds*. Also create database named *cryptohds*.
 * **maven** - Maven must be installed in order to run the App.
 * **java 8** - Install java 8 or latest.
 * **IDE of your preference** - I prefer IntelliJ for Obvious reasons.
+
+You have to create a directory named "KeyStore" under "src", this is where we store the server's keys.
 
 ## Running backend
 
