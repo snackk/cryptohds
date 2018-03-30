@@ -41,9 +41,17 @@ public class LedgerService {
         return new LedgerBalanceDTO(findLedgerByPublicKey(publicKey).getBalance(), uncommittedOperationsDTO);
     }
     
-    public List<Operation> getOperationsFromLedger(String pubKey) {
-    	return findLedgerByPublicKey(pubKey).getOperations();
-    
+    public List<OperationDTO> getOperationsDTOFromLedger(String publicKey) {
+        List<OperationDTO> operationsDTO = new ArrayList<>();
+        for(Operation uop : getOperationsFromLedger(publicKey)) {
+            operationsDTO.add(new OperationDTO(uop.getId(), uop.getTimestamp(), uop.getValue(), uop.getCommitted(), uop.getType().toString(),
+                    uop.getLedger().getPublicKey(), publicKey));
+        }
+        return operationsDTO;
+    }
+
+    private List<Operation> getOperationsFromLedger(String publicKey) {
+        return findLedgerByPublicKey(publicKey).getOperations();
     }
 
     public boolean existsLedger(String publicKey) {
@@ -52,7 +60,7 @@ public class LedgerService {
         else return true;
     }
 
-    public Ledger findLedgerByPublicKey(String publicKey) {
+    protected Ledger findLedgerByPublicKey(String publicKey) {
         return this.ledgerRepository.findLedgerByPublicKey(publicKey);
     }
 
