@@ -4,12 +4,12 @@ import com.sec.cryptohds.domain.Ledger;
 import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.domain.OperationType;
 import com.sec.cryptohds.repository.OperationRepository;
-import com.sec.cryptohds.service.dto.OperationDTO;
-import com.sec.cryptohds.service.dto.ReceiveOperationDTO;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 import com.sec.cryptohds.service.exceptions.LedgerHasNoFundsException;
 import com.sec.cryptohds.service.exceptions.OperationDoesNotExistException;
+import com.sec.cryptohdslibrary.service.dto.OperationDTO;
+import com.sec.cryptohdslibrary.service.dto.ReceiveOperationDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

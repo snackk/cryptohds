@@ -1,4 +1,4 @@
-package com.sec.cryptohds.service.security;
+package com.sec.cryptohds.security;
 
 import com.sec.cryptohdslibrary.keystore.KeyStoreImpl;
 import org.springframework.stereotype.Service;
