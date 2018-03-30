@@ -83,7 +83,7 @@ public class LedgerResource {
         if (!ledgerService.existsLedger(publicKey)) {
             throw new LedgerDoesNotExistException(publicKey);
         } else {
-            return new ResponseEntity<>(ledgerService.getOperationsFromLedger(publicKey), HttpStatus.OK);
+            return new ResponseEntity<>(ledgerService.getOperationsDTOFromLedger(publicKey), HttpStatus.OK);
         }
     }
 }
