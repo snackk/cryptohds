@@ -3,10 +3,10 @@ package com.sec.cryptohds.web.rest;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 
+import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sec.cryptohds.service.LedgerService;
-import com.sec.cryptohds.service.dto.LedgerDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

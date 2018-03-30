@@ -3,11 +3,13 @@ package com.sec.cryptohds.service;
 import com.sec.cryptohds.domain.Ledger;
 import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.repository.LedgerRepository;
-import com.sec.cryptohds.service.dto.LedgerBalanceDTO;
-import com.sec.cryptohds.service.dto.LedgerDTO;
+import com.sec.cryptohdslibrary.service.dto.LedgerBalanceDTO;
+import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
+import com.sec.cryptohdslibrary.service.dto.OperationDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,13 @@ public class LedgerService {
         List<Operation> operations = getOperationsFromLedger(publicKey);
         List<Operation> uncommittedOperations = operations.stream().filter(operation -> !operation.getCommitted()).collect(Collectors.toList());
 
-        return new LedgerBalanceDTO(findLedgerByPublicKey(publicKey).getBalance(), uncommittedOperations);
+        List<OperationDTO> uncommittedOperationsDTO = new ArrayList<>();
+        for(Operation uop : uncommittedOperations) {
+            uncommittedOperationsDTO.add(new OperationDTO(uop.getId(), uop.getTimestamp(), uop.getValue(), uop.getCommitted(), uop.getType().toString(),
+                    uop.getLedger().getPublicKey(), publicKey));
+        }
+
+        return new LedgerBalanceDTO(findLedgerByPublicKey(publicKey).getBalance(), uncommittedOperationsDTO);
     }
     
     public List<Operation> getOperationsFromLedger(String pubKey) {

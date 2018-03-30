@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface LedgerRepository extends JpaRepository<Ledger, Long> {
 
     Ledger findLedgerByPublicKey(String publicKey);
-
 }
