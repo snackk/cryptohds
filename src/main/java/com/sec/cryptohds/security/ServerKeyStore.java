@@ -1,7 +1,7 @@
 package com.sec.cryptohds.security;
 
 import com.sec.cryptohdslibrary.keystore.KeyStoreImpl;
-import com.sec.cryptohdslibrary.security.RsaRelatedMethods;
+import com.sec.cryptohdslibrary.security.CipherInstance;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +14,6 @@ public class ServerKeyStore {
     }
 
     public String getKeyStorePublicKey() {
-        return RsaRelatedMethods.encodePublicKey(getKeyStore().getkeyPairHDS().getPublic());
+        return CipherInstance.encodePublicKey(getKeyStore().getkeyPairHDS().getPublic());
     }
 }
