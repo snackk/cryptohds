@@ -18,6 +18,8 @@ public class Ledger {
     private String publicKey;
 
     private Long balance;
+    
+    private int seqNumber;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Operation> operations = new ArrayList<>();
@@ -30,8 +32,17 @@ public class Ledger {
         this.name = name;
         this.publicKey = publicKey;
         this.balance = 90L;
+        this.seqNumber = 0;
     }
 
+    public int getSeqNumber() {
+    	return seqNumber;
+    }
+   
+    public void setSeqNumber(int seqNumb) {
+    	seqNumber = seqNumb;
+    }
+    
     public Long getId() {
         return id;
     }
