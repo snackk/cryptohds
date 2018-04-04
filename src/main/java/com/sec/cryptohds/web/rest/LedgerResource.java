@@ -1,16 +1,12 @@
 package com.sec.cryptohds.web.rest;
 
-import com.sec.cryptohds.security.ServerKeyStore;
+import com.sec.cryptohds.security.EnvelopeHandler;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
-
-import com.sec.cryptohds.service.exceptions.SecurityValidationException;
 import com.sec.cryptohdslibrary.envelope.Envelope;
-import com.sec.cryptohdslibrary.envelope.Message;
 import com.sec.cryptohdslibrary.service.dto.LedgerBalanceDTO;
 import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
-import com.sec.cryptohdslibrary.service.dto.OperationDTO;
 import com.sec.cryptohdslibrary.service.dto.OperationListDTO;
 
 import org.slf4j.Logger;
@@ -32,21 +28,22 @@ public class LedgerResource {
 
     private final LedgerService ledgerService;
 
-    private final ServerKeyStore serverKeyStore;
+    private final EnvelopeHandler envelopeHandler;
 
     public LedgerResource(LedgerService ledgerService,
-                          ServerKeyStore serverKeyStore) {
+                          EnvelopeHandler envelopeHandler) {
         this.ledgerService = ledgerService;
-        this.serverKeyStore = serverKeyStore;
+        this.envelopeHandler = envelopeHandler;
     }
+
 
     /**
      * POST  /ledgers  : Creates a new ledger.
      * <p>
      * Creates a new ledger if not already used.
      *
-     * @param envelope the ledger to create
-     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
+     * @param envelope that contains ciphered message.
+     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request)
      * @throws IOException 
      * @throws ClassNotFoundException 
      * @throws LedgerAlreadyExistsException
@@ -55,11 +52,7 @@ public class LedgerResource {
     public ResponseEntity<?> createLedger(@Valid @RequestBody Envelope envelope) throws CryptohdsException, ClassNotFoundException, IOException {
         log.debug("REST request to create Ledger : {}", envelope);
 
-        Message message = envelope.decipherEnvelope(this.serverKeyStore.getKeyStore());
-        if (!message.verifyMessageSignature(envelope.getClientPublicKey())) {
-            throw new SecurityValidationException(envelope.getClientPublicKey());
-        }
-        LedgerDTO ledgerDTO = (LedgerDTO) message.getContent();
+        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
 
         if (ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
             throw new LedgerAlreadyExistsException(ledgerDTO.getPublicKey());
@@ -68,68 +61,58 @@ public class LedgerResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-//    @PostMapping("/ledgers")
-//    public ResponseEntity<?> createLedger(@Valid @RequestBody LedgerDTO ledgerDTO) throws LedgerAlreadyExistsException {
-//        log.debug("REST request to create Ledger : {}", ledgerDTO);
-//
-//        if (ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
-//            throw new LedgerAlreadyExistsException(ledgerDTO.getPublicKey());
-//        } else {
-//            ledgerService.registerLedger(ledgerDTO);
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        }
-//    }
     
 
     /**
-     * GET  /ledger/balance  : Returns balance of ledger.
+     * POST  /ledger/balance  : Returns balance of ledger.
      * <p>
      * Returns balance of ledger if it exists.
      *
-     * @param publicKey the public key of the ledger
-     * @return the ResponseEntity with status 200 and the balance on the body or with status 500 (Bad Request) if
+     * @param envelope that contains ciphered message.
+     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request)
      * @throws LedgerDoesNotExistException
      * @throws IOException 
      */
-    @GetMapping("/ledger/balance")
-    public ResponseEntity<?> checkBalance(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException, IOException {
-        log.debug("REST request to check Ledger's balance : {}", publicKey);
+    @PostMapping("/ledger/balance")
+    public ResponseEntity<?> checkBalance(@Valid @RequestBody Envelope envelope) throws LedgerDoesNotExistException, IOException, ClassNotFoundException {
+        log.debug("REST request to check Ledger's balance : {}", envelope);
 
-        if (!ledgerService.existsLedger(publicKey)) {
-            throw new LedgerDoesNotExistException(publicKey);
+        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+
+        if (!ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
+            throw new LedgerDoesNotExistException(ledgerDTO.getPublicKey());
         } else {
-        	LedgerBalanceDTO ldto = ledgerService.getBalanceFromLedger(publicKey);
-        	Message message = new Message(ldto,this.serverKeyStore.getKeyStore());
-        	Envelope env = new Envelope();
-        	env.cipherEnvelope(message, publicKey);
+        	LedgerBalanceDTO balanceDTO = ledgerService.getBalanceFromLedger(ledgerDTO.getPublicKey());
         	
-            return new ResponseEntity<>(env, HttpStatus.OK);
+            return new ResponseEntity<>(this.envelopeHandler.handleOutcomeEnvelope(balanceDTO, ledgerDTO.getPublicKey()),
+                    HttpStatus.OK);
         }
     }
 
+
     /**
-     * GET  /ledger/audit  : Return all operations of a ledger.
+     * POST  /ledger/audit  : Return all operations of a ledger.
      * <p>
      * Returns List <OperationDTO> with all operations.
      *
-     * @param publicKey the public key of the ledger
-     * @return the ResponseEntity with status 200 and the List <OperationDTO> on the body or with status 500 (Bad Request) if
+     * @param envelope that contains ciphered message.
+     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request)
      * @throws LedgerDoesNotExistException
      * @throws IOException 
      */
-    @GetMapping("/ledger/audit")
-    public ResponseEntity<?> audit(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException, IOException {
-        log.debug("REST request to check Ledger's operations : {}", publicKey);
+    @PostMapping("/ledger/audit")
+    public ResponseEntity<?> audit(@Valid @RequestBody Envelope envelope) throws LedgerDoesNotExistException, IOException, ClassNotFoundException {
+        log.debug("REST request to check Ledger's operations : {}", envelope);
 
-        if (!ledgerService.existsLedger(publicKey)) {
-            throw new LedgerDoesNotExistException(publicKey);
+        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+
+        if (!ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
+            throw new LedgerDoesNotExistException(ledgerDTO.getPublicKey());
         } else {
+            OperationListDTO operationListDTO = ledgerService.getOperationsDTOFromLedger(ledgerDTO.getPublicKey());
 
-        		OperationListDTO op = ledgerService.getOperationsDTOFromLedger(publicKey);
-            	Message message = new Message(op,this.serverKeyStore.getKeyStore());
-            	Envelope env = new Envelope();
-            	env.cipherEnvelope(message, publicKey);
-            	return new ResponseEntity<>(env, HttpStatus.OK);
+            return new ResponseEntity<>(this.envelopeHandler.handleOutcomeEnvelope(operationListDTO, ledgerDTO.getPublicKey()),
+                    HttpStatus.OK);
         }	
     }
 }

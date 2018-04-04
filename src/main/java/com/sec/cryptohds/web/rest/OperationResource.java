@@ -1,8 +1,10 @@
 package com.sec.cryptohds.web.rest;
 
+import com.sec.cryptohds.security.EnvelopeHandler;
 import com.sec.cryptohds.service.OperationService;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
 
+import com.sec.cryptohdslibrary.envelope.Envelope;
 import com.sec.cryptohdslibrary.service.dto.OperationDTO;
 import com.sec.cryptohdslibrary.service.dto.ReceiveOperationDTO;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 @RestController
@@ -22,8 +25,13 @@ public class OperationResource {
 
     private final OperationService operationService;
 
-    public OperationResource(OperationService operationService) {
+    private final EnvelopeHandler envelopeHandler;
+
+    public OperationResource(OperationService operationService,
+                             EnvelopeHandler envelopeHandler) {
+
         this.operationService = operationService;
+        this.envelopeHandler = envelopeHandler;
     }
 
     /**
@@ -31,13 +39,15 @@ public class OperationResource {
      * <p>
      * Sends an amount from destination to source.
      *
-     * @param operationDTO the operation to create
+     * @param envelope that contains ciphered message.
      * @return the ResponseEntity with status 201 (Created) and with body the operation, or with status 400 (Bad Request)
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/operation/send")
-    public ResponseEntity<?> sendOperation(@Valid @RequestBody OperationDTO operationDTO) throws CryptohdsException {
-        log.debug("REST request to send Operation : {}", operationDTO);
+    public ResponseEntity<?> sendOperation(@Valid @RequestBody Envelope envelope) throws CryptohdsException, IOException, ClassNotFoundException {
+        log.debug("REST request to send Operation : {}", envelope);
+
+        OperationDTO operationDTO = (OperationDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
 
         operationService.createOperation(operationDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -49,13 +59,15 @@ public class OperationResource {
      * <p>
      * Receives an amount from source.
      *
-     * @param receiveOperationDTO the operation to receive
+     * @param envelope that contains ciphered message.
      * @return the ResponseEntity with status 201 (Received) and with body the operation, or with status 400 (Bad Request)
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/operation/receive")
-    public ResponseEntity<?> receiveOperation(@Valid @RequestBody ReceiveOperationDTO receiveOperationDTO) throws CryptohdsException {
-        log.debug("REST request to receive Operation : {}", receiveOperationDTO);
+    public ResponseEntity<?> receiveOperation(@Valid @RequestBody Envelope envelope) throws CryptohdsException, IOException, ClassNotFoundException {
+        log.debug("REST request to receive Operation : {}", envelope);
+
+        ReceiveOperationDTO receiveOperationDTO = (ReceiveOperationDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
 
         operationService.receiveOperation(receiveOperationDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

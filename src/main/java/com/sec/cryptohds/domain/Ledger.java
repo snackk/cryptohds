@@ -15,6 +15,8 @@ public class Ledger {
 
     private String name;
 
+    @Column(length=1000000)
+    @Lob
     private String publicKey;
 
     private Long balance;
