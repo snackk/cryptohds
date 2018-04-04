@@ -1,6 +1,6 @@
 package com.sec.cryptohds.web.rest;
 
-import com.sec.cryptohds.security.keystore.ServerKeyStore;
+import com.sec.cryptohds.security.ServerKeyStore;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
@@ -8,7 +8,6 @@ import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 import com.sec.cryptohds.service.exceptions.SecurityValidationException;
 import com.sec.cryptohdslibrary.envelope.Envelope;
 import com.sec.cryptohdslibrary.envelope.Message;
-import com.sec.cryptohdslibrary.security.CipherInstance;
 import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class LedgerResource {
      * <p>
      * Creates a new ledger if not already used.
      *
-     * @param ledgerDTO the ledger to create
+     * @param envelope the ledger to create
      * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
      * @throws LedgerAlreadyExistsException
      */
