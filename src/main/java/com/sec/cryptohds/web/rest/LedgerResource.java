@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 import javax.validation.Valid;
 
 @RestController
@@ -41,10 +43,12 @@ public class LedgerResource {
      *
      * @param envelope the ledger to create
      * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request) if
+     * @throws IOException 
+     * @throws ClassNotFoundException 
      * @throws LedgerAlreadyExistsException
      */
     @PostMapping("/ledgers")
-    public ResponseEntity<?> createLedger(@Valid @RequestBody Envelope envelope) throws CryptohdsException {
+    public ResponseEntity<?> createLedger(@Valid @RequestBody Envelope envelope) throws CryptohdsException, ClassNotFoundException, IOException {
         log.debug("REST request to create Ledger : {}", envelope);
 
         Message message = envelope.decipherEnvelope(this.serverKeyStore.getKeyStore());
