@@ -8,7 +8,11 @@ import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 import com.sec.cryptohds.service.exceptions.SecurityValidationException;
 import com.sec.cryptohdslibrary.envelope.Envelope;
 import com.sec.cryptohdslibrary.envelope.Message;
+import com.sec.cryptohdslibrary.service.dto.LedgerBalanceDTO;
 import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
+import com.sec.cryptohdslibrary.service.dto.OperationDTO;
+import com.sec.cryptohdslibrary.service.dto.OperationListDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sec.cryptohds.service.LedgerService;
@@ -85,15 +89,21 @@ public class LedgerResource {
      * @param publicKey the public key of the ledger
      * @return the ResponseEntity with status 200 and the balance on the body or with status 500 (Bad Request) if
      * @throws LedgerDoesNotExistException
+     * @throws IOException 
      */
     @GetMapping("/ledger/balance")
-    public ResponseEntity<?> checkBalance(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException {
+    public ResponseEntity<?> checkBalance(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException, IOException {
         log.debug("REST request to check Ledger's balance : {}", publicKey);
 
         if (!ledgerService.existsLedger(publicKey)) {
             throw new LedgerDoesNotExistException(publicKey);
         } else {
-            return new ResponseEntity<>(ledgerService.getBalanceFromLedger(publicKey), HttpStatus.OK);
+        	LedgerBalanceDTO ldto = ledgerService.getBalanceFromLedger(publicKey);
+        	Message message = new Message(ldto,this.serverKeyStore.getKeyStore());
+        	Envelope env = new Envelope();
+        	env.cipherEnvelope(message, publicKey);
+        	
+            return new ResponseEntity<>(env, HttpStatus.OK);
         }
     }
 
@@ -105,16 +115,22 @@ public class LedgerResource {
      * @param publicKey the public key of the ledger
      * @return the ResponseEntity with status 200 and the List <OperationDTO> on the body or with status 500 (Bad Request) if
      * @throws LedgerDoesNotExistException
+     * @throws IOException 
      */
     @GetMapping("/ledger/audit")
-    public ResponseEntity<?> audit(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException {
+    public ResponseEntity<?> audit(@RequestParam(value = "publicKey") String publicKey) throws LedgerDoesNotExistException, IOException {
         log.debug("REST request to check Ledger's operations : {}", publicKey);
 
         if (!ledgerService.existsLedger(publicKey)) {
             throw new LedgerDoesNotExistException(publicKey);
         } else {
-            return new ResponseEntity<>(ledgerService.getOperationsDTOFromLedger(publicKey), HttpStatus.OK);
-        }
+
+        		OperationListDTO op = ledgerService.getOperationsDTOFromLedger(publicKey);
+            	Message message = new Message(op,this.serverKeyStore.getKeyStore());
+            	Envelope env = new Envelope();
+            	env.cipherEnvelope(message, publicKey);
+            	return new ResponseEntity<>(env, HttpStatus.OK);
+        }	
     }
 }
   

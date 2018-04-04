@@ -6,6 +6,8 @@ import com.sec.cryptohds.repository.LedgerRepository;
 import com.sec.cryptohdslibrary.service.dto.LedgerBalanceDTO;
 import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
 import com.sec.cryptohdslibrary.service.dto.OperationDTO;
+import com.sec.cryptohdslibrary.service.dto.OperationListDTO;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,14 +43,17 @@ public class LedgerService {
         return new LedgerBalanceDTO(findLedgerByPublicKey(publicKey).getBalance(), uncommittedOperationsDTO);
     }
     
-    public List<OperationDTO> getOperationsDTOFromLedger(String publicKey) {
+    public OperationListDTO getOperationsDTOFromLedger(String publicKey) {
+
         List<OperationDTO> operationsDTO = new ArrayList<>();
         for(Operation uop : getOperationsFromLedger(publicKey)) {
             operationsDTO.add(new OperationDTO(uop.getId(), uop.getTimestamp(), uop.getValue(), uop.getCommitted(), uop.getType().toString(),
                     uop.getLedger().getPublicKey(), publicKey));
         }
-        return operationsDTO;
+    	OperationListDTO op = new OperationListDTO(operationsDTO);
+        return op;
     }
+    
 
     private List<Operation> getOperationsFromLedger(String publicKey) {
         return findLedgerByPublicKey(publicKey).getOperations();
