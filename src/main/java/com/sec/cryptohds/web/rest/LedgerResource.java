@@ -1,8 +1,14 @@
 package com.sec.cryptohds.web.rest;
 
+import com.sec.cryptohds.security.keystore.ServerKeyStore;
+import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 
+import com.sec.cryptohds.service.exceptions.SecurityValidationException;
+import com.sec.cryptohdslibrary.envelope.Envelope;
+import com.sec.cryptohdslibrary.envelope.Message;
+import com.sec.cryptohdslibrary.security.CipherInstance;
 import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +27,12 @@ public class LedgerResource {
 
     private final LedgerService ledgerService;
 
-    public LedgerResource(LedgerService ledgerService) {
+    private final ServerKeyStore serverKeyStore;
+
+    public LedgerResource(LedgerService ledgerService,
+                          ServerKeyStore serverKeyStore) {
         this.ledgerService = ledgerService;
+        this.serverKeyStore = serverKeyStore;
     }
 
     /**
@@ -35,8 +45,14 @@ public class LedgerResource {
      * @throws LedgerAlreadyExistsException
      */
     @PostMapping("/ledgers")
-    public ResponseEntity<?> createLedger(@Valid @RequestBody LedgerDTO ledgerDTO) throws LedgerAlreadyExistsException {
-        log.debug("REST request to create Ledger : {}", ledgerDTO);
+    public ResponseEntity<?> createLedger(@Valid @RequestBody Envelope envelope) throws CryptohdsException {
+        log.debug("REST request to create Ledger : {}", envelope);
+
+        Message message = envelope.decipherEnvelope(this.serverKeyStore.getKeyStore());
+        if (!message.verifyMessageSignature(envelope.getClientPublicKey())) {
+            throw new SecurityValidationException(envelope.getClientPublicKey());
+        }
+        LedgerDTO ledgerDTO = (LedgerDTO) message.getContent();
 
         if (ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
             throw new LedgerAlreadyExistsException(ledgerDTO.getPublicKey());
@@ -45,6 +61,17 @@ public class LedgerResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+//    @PostMapping("/ledgers")
+//    public ResponseEntity<?> createLedger(@Valid @RequestBody LedgerDTO ledgerDTO) throws LedgerAlreadyExistsException {
+//        log.debug("REST request to create Ledger : {}", ledgerDTO);
+//
+//        if (ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
+//            throw new LedgerAlreadyExistsException(ledgerDTO.getPublicKey());
+//        } else {
+//            ledgerService.registerLedger(ledgerDTO);
+//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//        }
+//    }
     
 
     /**
