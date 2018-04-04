@@ -1,6 +1,6 @@
 package com.sec.cryptohds.web.rest;
 
-import com.sec.cryptohds.security.keystore.ServerKeyStore;
+import com.sec.cryptohds.security.ServerKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
