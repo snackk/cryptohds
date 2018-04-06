@@ -87,9 +87,9 @@ public class OperationService {
                 origin.setBalance(origin.getBalance() - op.getValue());
                 this.ledgerService.saveLedger(origin);
 
-
+                break;
             }
-            this.ledgerService.saveLedger(ledger);
         }
+        this.ledgerService.saveLedger(ledger);
     }
 }
