@@ -1,10 +1,14 @@
 package com.sec.cryptohds.security;
 
+import com.sec.cryptohds.domain.Ledger;
+import com.sec.cryptohds.service.LedgerService;
+import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.SecurityValidationException;
+import com.sec.cryptohds.service.exceptions.SequenceNumberNoMatchException;
 import com.sec.cryptohdslibrary.envelope.Envelope;
 import com.sec.cryptohdslibrary.envelope.Message;
-import com.sec.cryptohdslibrary.security.CipherInstance;
 import com.sec.cryptohdslibrary.service.dto.CryptohdsDTO;
+
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,22 +18,47 @@ public class EnvelopeHandler {
 
     private final ServerKeyStore serverKeyStore;
 
-    public EnvelopeHandler(ServerKeyStore serverKeyStore) {
+    private final LedgerService ledgerService;
+
+    public EnvelopeHandler(ServerKeyStore serverKeyStore,
+                           LedgerService ledgerService) {
         this.serverKeyStore = serverKeyStore;
+        this.ledgerService = ledgerService;
     }
 
-    public CryptohdsDTO handleIncomeEnvelope(Envelope envelope) throws IOException, ClassNotFoundException {
+    public CryptohdsDTO handleIncomeEnvelope(Envelope envelope) throws IOException, ClassNotFoundException, CryptohdsException {
         Message message = envelope.decipherEnvelope(this.serverKeyStore.getKeyStore());
+
+        /*Verify if Message Signature is valid*/
         if (!message.verifyMessageSignature(envelope.getClientPublicKey())) {
             throw new SecurityValidationException(envelope.getClientPublicKey());
         }
+
+        boolean existsLedger = this.ledgerService.existsLedger(envelope.getClientPublicKey());
+        Ledger ledger = null;
+
+        if (existsLedger)
+            ledger = this.ledgerService.findLedgerByPublicKey(envelope.getClientPublicKey());
+
+        /*Verifies if Sequence number match*/
+        if (existsLedger && message.getSeqNumber() != -1 && (message.getSeqNumber() != ledger.getSeqNumber())) {
+            throw new SequenceNumberNoMatchException();
+        }
+
+        if (existsLedger) {
+            /*Validation correct, time to increment sequence number*/
+            ledger.setSeqNumber(ledger.getSeqNumber() + 1);
+            this.ledgerService.saveLedger(ledger);
+        }
+
         return message.getContent();
     }
 
     public Envelope handleOutcomeEnvelope(CryptohdsDTO cryptohdsDTO, String ledgerPublicKey) throws IOException {
         String pKey = this.serverKeyStore.getKeyStorePublicKey();
+        Ledger ledger = this.ledgerService.findLedgerByPublicKey(ledgerPublicKey);
 
-        Message response = new Message(cryptohdsDTO, this.serverKeyStore.getKeyStore());
+        Message response = new Message(cryptohdsDTO, this.serverKeyStore.getKeyStore(), ledger.getSeqNumber());
         Envelope env = new Envelope();
         env.cipherEnvelope(response, ledgerPublicKey);
 
