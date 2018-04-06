@@ -25,6 +25,11 @@ public class LedgerService {
         this.ledgerRepository = ledgerRepository;
     }
 
+    public void updateLedgerSeqNumber(LedgerDTO ledgerDTO) {
+        Ledger ledger = findLedgerByPublicKey(ledgerDTO.getPublicKey());
+        ledgerDTO.setSeqNumber(ledger.getSeqNumber());
+    }
+
     public Ledger registerLedger(LedgerDTO ledgerDTO) {
         Ledger ledger = new Ledger(ledgerDTO.getName(), ledgerDTO.getPublicKey());
         return ledgerRepository.save(ledger);
@@ -65,7 +70,7 @@ public class LedgerService {
         else return true;
     }
 
-    protected Ledger findLedgerByPublicKey(String publicKey) {
+    public Ledger findLedgerByPublicKey(String publicKey) {
         return this.ledgerRepository.findLedgerByPublicKey(publicKey);
     }
 

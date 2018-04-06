@@ -38,6 +38,30 @@ public class LedgerResource {
 
 
     /**
+     * POST  /ledger/update  : Updates the client ledger.
+     * <p>
+     * Returns the updated sequence number
+     *
+     * @param envelope that contains ciphered message.
+     * @return the ResponseEntity with status 204 (Created) or with status 500 (Bad Request)
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws LedgerAlreadyExistsException
+     */
+    @PostMapping("/ledger/update")
+    public ResponseEntity<?> clientUpdateLedger(@Valid @RequestBody Envelope envelope) throws CryptohdsException, ClassNotFoundException, IOException {
+        log.debug("REST request to update Client's Ledger version : {}", envelope);
+
+        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+
+        this.ledgerService.updateLedgerSeqNumber(ledgerDTO);
+
+        return new ResponseEntity<>(this.envelopeHandler.handleOutcomeEnvelope(ledgerDTO, ledgerDTO.getPublicKey()),
+                HttpStatus.OK);
+    }
+
+
+    /**
      * POST  /ledgers  : Creates a new ledger.
      * <p>
      * Creates a new ledger if not already used.
