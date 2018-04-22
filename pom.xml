@@ -60,11 +60,23 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<configuration>
+					<contextDirectory>${project.basedir}/src/main/docker</contextDirectory>
+					<verbose>true</verbose>
+					<tag>${project.build.finalName}</tag>
+					<repository>${project.artifactId}</repository>
+					<buildArgs>
+						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
