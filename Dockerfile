@@ -5,11 +5,11 @@ ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
     JAVA_OPTS=""
 
 ARG JAR_FILE
-ADD ${JAR_FILE} app.jar
+ADD ${JAR_FILE} cryptohds.jar
 
 CMD echo "cryptohds will start in ${APP_SLEEP}s..." && \
     sleep ${APP_SLEEP} && \
-    java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+    java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /cryptohds.jar
 
 EXPOSE 80
 
