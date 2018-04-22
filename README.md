@@ -8,15 +8,22 @@ Before anything, the following requirements must be met:
 * **maven** - Maven must be installed in order to run the App.
 * **java 8** - Install java 8 or latest.
 * **IDE of your preference** - I prefer IntelliJ for Obvious reasons.
-
 You have to create a directory named "KeyStore" under "src", this is where we store the server's keys.
 
-## Running backend
+## Running (Dev)
 
 To run the App on the terminal do the following:
 ```sh
 $ mvn clean install 
-$ mvn spring-boot:run
+$ mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+## Docker
+
+```sh
+$ mvn install dockerfile:build 
+$ cd src/main/docker
+$ docker-compose -f cryptohds.yml up -d
 ```
 
 On IntelliJ there's no need of maven vodu, it has a spring button to run.
