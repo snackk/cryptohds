@@ -64,7 +64,7 @@
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>1.4.0</version>
 				<configuration>
-					<contextDirectory>${project.basedir}/src/main/docker</contextDirectory>
+					<contextDirectory>${project.basedir}</contextDirectory>
 					<verbose>true</verbose>
 					<tag>${project.build.finalName}</tag>
 					<repository>${project.artifactId}</repository>
