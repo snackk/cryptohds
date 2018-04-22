@@ -5,6 +5,10 @@ services:
         environment:
             #- SPRING_DATASOURCE_URL=jdbc:mysql://teste-mysql:3306/teste?useUnicode=true&characterEncoding=utf8&useSSL=false
             - APP_SLEEP=10 # gives time for the database to boot before the application
+            - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.jdbc.Driver
+            - SPRING_DATASOURCE_URL=jdbc:mysql://cryptohds-mysql:3306/cryptohds
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=cryptohds
         ports:
             - 80:80
     cryptohds-mysql:
