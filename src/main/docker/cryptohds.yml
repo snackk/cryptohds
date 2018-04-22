@@ -1,7 +1,7 @@
 version: '2'
 services:
     cryptohds:
-        image: cryptohds
+        image: cryptohds:cryptohds-2.0.0-SNAPSHOT
         environment:
             #- SPRING_DATASOURCE_URL=jdbc:mysql://teste-mysql:3306/teste?useUnicode=true&characterEncoding=utf8&useSSL=false
             - APP_SLEEP=10 # gives time for the database to boot before the application
