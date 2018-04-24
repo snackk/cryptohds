@@ -11,7 +11,7 @@ CMD echo "cryptohds will start in ${APP_SLEEP}s..." && \
     sleep ${APP_SLEEP} && \
     java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /cryptohds.jar
 
-EXPOSE 80
+EXPOSE 8080
 
 
 
