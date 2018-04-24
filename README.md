@@ -8,6 +8,8 @@ Before anything, the following requirements must be met:
 * **maven** - Maven must be installed in order to run the App.
 * **java 8** - Install java 8 or latest.
 * **IDE of your preference** - I prefer IntelliJ for Obvious reasons.
+* **Docker** - To create containers. 
+
 You have to create a directory named "KeyStore" under "src", this is where we store the server's keys.
 
 ## Running (Dev)
@@ -26,9 +28,8 @@ $ cd src/main/docker
 $ docker-compose -f cryptohds.yml up -d
 ```
 
-On IntelliJ there's no need of maven vodu, it has a spring button to run.
 
-## Client (For the test purpose use Postman)
+## Client (Postman)
 
 ## Ledger API
 ### Register 
