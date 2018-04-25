@@ -3,7 +3,7 @@ spring:
 
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:32770/cryptohds
+    url: jdbc:mysql://localhost:3306/cryptohds
     username: root
     password: cryptohds
 
