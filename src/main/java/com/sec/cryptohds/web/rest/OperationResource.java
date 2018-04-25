@@ -1,21 +1,26 @@
 package com.sec.cryptohds.web.rest;
 
-import com.sec.cryptohds.security.EnvelopeHandler;
-import com.sec.cryptohds.service.OperationService;
-import com.sec.cryptohds.service.exceptions.CryptohdsException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
-import com.sec.cryptohdslibrary.envelope.Envelope;
-import com.sec.cryptohdslibrary.service.dto.OperationDTO;
-import com.sec.cryptohdslibrary.service.dto.ReceiveOperationDTO;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import com.sec.cryptohds.security.EnvelopeHandler;
+import com.sec.cryptohds.service.OperationService;
+import com.sec.cryptohds.service.exceptions.CryptohdsException;
+import com.sec.cryptohdslibrary.envelope.Envelope;
+import com.sec.cryptohdslibrary.envelope.Message;
+import com.sec.cryptohdslibrary.service.dto.OperationDTO;
+import com.sec.cryptohdslibrary.service.dto.ReceiveOperationDTO;
 
 @RestController
 @RequestMapping("/api")
@@ -47,12 +52,12 @@ public class OperationResource {
     public ResponseEntity<?> sendOperation(@Valid @RequestBody Envelope envelope) throws CryptohdsException, IOException, ClassNotFoundException {
         log.debug("REST request to send Operation : {}", envelope);
 
-        OperationDTO operationDTO = (OperationDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+		Message message = this.envelopeHandler.handleIncomeEnvelope(envelope);
+		OperationDTO operationDTO = (OperationDTO) message.getContent();
 
-        operationService.createOperation(operationDTO);
+		operationService.createOperation(operationDTO, message.getSignedContent());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
     /**
      * POST  /operation/receive  : Receives an amount from source.
@@ -67,9 +72,10 @@ public class OperationResource {
     public ResponseEntity<?> receiveOperation(@Valid @RequestBody Envelope envelope) throws CryptohdsException, IOException, ClassNotFoundException {
         log.debug("REST request to receive Operation : {}", envelope);
 
-        ReceiveOperationDTO receiveOperationDTO = (ReceiveOperationDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+		Message message = this.envelopeHandler.handleIncomeEnvelope(envelope);
+		ReceiveOperationDTO receiveOperationDTO = (ReceiveOperationDTO) message.getContent();
 
-        operationService.receiveOperation(receiveOperationDTO);
+		operationService.receiveOperation(receiveOperationDTO, message.getSignedContent());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -1,5 +1,9 @@
 package com.sec.cryptohds.security;
 
+import java.io.IOException;
+
+import org.springframework.stereotype.Service;
+
 import com.sec.cryptohds.domain.Ledger;
 import com.sec.cryptohds.service.LedgerService;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
@@ -8,10 +12,6 @@ import com.sec.cryptohds.service.exceptions.SequenceNumberNoMatchException;
 import com.sec.cryptohdslibrary.envelope.Envelope;
 import com.sec.cryptohdslibrary.envelope.Message;
 import com.sec.cryptohdslibrary.service.dto.CryptohdsDTO;
-
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 public class EnvelopeHandler {
@@ -26,7 +26,8 @@ public class EnvelopeHandler {
         this.ledgerService = ledgerService;
     }
 
-    public CryptohdsDTO handleIncomeEnvelope(Envelope envelope) throws IOException, ClassNotFoundException, CryptohdsException {
+	public Message handleIncomeEnvelope(Envelope envelope)
+			throws IOException, ClassNotFoundException, CryptohdsException {
         Message message = envelope.decipherEnvelope(this.serverKeyStore.getKeyStore());
 
         /*Verify if Message Signature is valid*/
@@ -51,7 +52,7 @@ public class EnvelopeHandler {
             this.ledgerService.saveLedger(ledger);
         }
 
-        return message.getContent();
+		return message;
     }
 
     public Envelope handleOutcomeEnvelope(CryptohdsDTO cryptohdsDTO, String ledgerPublicKey) throws IOException {
