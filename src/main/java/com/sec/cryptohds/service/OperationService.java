@@ -1,5 +1,12 @@
 package com.sec.cryptohds.service;
 
+import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sec.cryptohds.domain.Ledger;
 import com.sec.cryptohds.domain.Operation;
 import com.sec.cryptohds.domain.OperationType;
@@ -10,11 +17,6 @@ import com.sec.cryptohds.service.exceptions.LedgerHasNoFundsException;
 import com.sec.cryptohds.service.exceptions.OperationDoesNotExistException;
 import com.sec.cryptohdslibrary.service.dto.OperationDTO;
 import com.sec.cryptohdslibrary.service.dto.ReceiveOperationDTO;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -29,7 +31,7 @@ public class OperationService {
         this.ledgerService = ledgerService;
     }
 
-    public void createOperation(OperationDTO operationDTO) throws CryptohdsException {
+	public void createOperation(OperationDTO operationDTO, byte[] signature) throws CryptohdsException {
         Ledger origin = ledgerService.findLedgerByPublicKey(operationDTO.getOriginPublicKey());
         Ledger destination = ledgerService.findLedgerByPublicKey(operationDTO.getDestinationPublicKey());
 
@@ -55,9 +57,12 @@ public class OperationService {
         Operation operationDest = new Operation(origin, OperationType.INCOMING, operationDTO.getValue());
         Operation operationOri = new Operation(destination, OperationType.OUTCOMING, operationDTO.getValue());
 
-        operationOri = operationRepository.save(operationOri);
+		// save signature with the operation
+		operationOri.setSignature(Base64.getEncoder().encodeToString(signature));
+
+		operationOri = this.saveOperation(operationOri);
         operationDest.setOriginOperationID(operationOri.getId());
-        operationDest = operationRepository.save(operationDest);
+		operationDest = this.saveOperation(operationDest);
 
         origin.addOperation(operationOri);
         destination.addOperation(operationDest);
@@ -66,30 +71,43 @@ public class OperationService {
         this.ledgerService.saveLedger(destination);
     }
 
-    public void receiveOperation(ReceiveOperationDTO receiveOperationDTO) throws OperationDoesNotExistException {
-        Ledger ledger = ledgerService.findLedgerByPublicKey(receiveOperationDTO.getPublicKey());
-        List<Operation> committedOperations = ledger.getOperations().stream().filter(operation -> operation.getId().equals(receiveOperationDTO.getOperationId())).collect(Collectors.toList());
+    public void receiveOperation(ReceiveOperationDTO receiveOperationDTO, byte[] signature) throws OperationDoesNotExistException {
+        Ledger receivingLedger = ledgerService.findLedgerByPublicKey(receiveOperationDTO.getPublicKey());
+        List<Operation> committedOperations = receivingLedger.getOperations().stream().filter(operation -> operation.getId().equals(receiveOperationDTO.getOperationId())).collect(Collectors.toList());
 
-        if (committedOperations == null || (committedOperations != null && committedOperations.size() < 1)) {
+		if (committedOperations == null || committedOperations.isEmpty()) {
             throw new OperationDoesNotExistException(receiveOperationDTO.getOperationId());
         }
 
-        for (Operation op : ledger.getOperations()) {
+        for (Operation op : receivingLedger.getOperations()) {
             if (op.getId().equals(receiveOperationDTO.getOperationId())) {
-                op.setCommitted(true);
+				// update receiving ledger balance
+				receivingLedger.setBalance(receivingLedger.getBalance() + op.getValue());
 
-                Operation originOperation = operationRepository.findOperationById(op.getOriginOperationID());
-                originOperation.setCommitted(true);
+				// set sender ledger new balance
+				Ledger senderLeder = ledgerService.findLedgerByPublicKey(op.getLedger().getPublicKey());
+				senderLeder.setBalance(senderLeder.getBalance() - op.getValue());
+				this.ledgerService.saveLedger(senderLeder);
 
-                ledger.setBalance(ledger.getBalance() + op.getValue());
+				// set origin operation to committed
+				Operation originOperation = operationRepository.findOperationById(op.getOriginOperationID());
+				originOperation.setCommitted(true);
+				this.saveOperation(originOperation);
 
-                Ledger origin = ledgerService.findLedgerByPublicKey(op.getLedger().getPublicKey());
-                origin.setBalance(origin.getBalance() - op.getValue());
-                this.ledgerService.saveLedger(origin);
+				// set destination operation to committed and add message's signature
+				op.setCommitted(true);
+				op.setSignature(Base64.getEncoder().encodeToString(signature));
+				this.saveOperation(op);
 
                 break;
             }
         }
-        this.ledgerService.saveLedger(ledger);
+
+		// persist receiving ledger changes
+        this.ledgerService.saveLedger(receivingLedger);
+    }
+    
+	public Operation saveOperation(Operation op) {
+		return operationRepository.save(op);
     }
 }

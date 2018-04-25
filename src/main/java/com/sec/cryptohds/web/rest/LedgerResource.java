@@ -1,24 +1,28 @@
 package com.sec.cryptohds.web.rest;
 
+import java.io.IOException;
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.sec.cryptohds.security.EnvelopeHandler;
+import com.sec.cryptohds.service.LedgerService;
 import com.sec.cryptohds.service.exceptions.CryptohdsException;
 import com.sec.cryptohds.service.exceptions.LedgerAlreadyExistsException;
 import com.sec.cryptohds.service.exceptions.LedgerDoesNotExistException;
 import com.sec.cryptohdslibrary.envelope.Envelope;
+import com.sec.cryptohdslibrary.envelope.Message;
 import com.sec.cryptohdslibrary.service.dto.LedgerBalanceDTO;
 import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
 import com.sec.cryptohdslibrary.service.dto.OperationListDTO;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.sec.cryptohds.service.LedgerService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -36,7 +40,6 @@ public class LedgerResource {
         this.envelopeHandler = envelopeHandler;
     }
 
-
     /**
      * POST  /ledger/update  : Updates the client ledger.
      * <p>
@@ -52,14 +55,14 @@ public class LedgerResource {
     public ResponseEntity<?> clientUpdateLedger(@Valid @RequestBody Envelope envelope) throws CryptohdsException, ClassNotFoundException, IOException {
         log.debug("REST request to update Client's Ledger version : {}", envelope);
 
-        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+		Message message = this.envelopeHandler.handleIncomeEnvelope(envelope);
+		LedgerDTO ledgerDTO = (LedgerDTO) message.getContent();
 
         this.ledgerService.updateLedgerSeqNumber(ledgerDTO);
 
         return new ResponseEntity<>(this.envelopeHandler.handleOutcomeEnvelope(ledgerDTO, ledgerDTO.getPublicKey()),
                 HttpStatus.OK);
     }
-
 
     /**
      * POST  /ledgers  : Creates a new ledger.
@@ -76,7 +79,8 @@ public class LedgerResource {
     public ResponseEntity<?> createLedger(@Valid @RequestBody Envelope envelope) throws CryptohdsException, ClassNotFoundException, IOException {
         log.debug("REST request to create Ledger : {}", envelope);
 
-        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+		Message message = this.envelopeHandler.handleIncomeEnvelope(envelope);
+		LedgerDTO ledgerDTO = (LedgerDTO) message.getContent();
 
         if (ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
             throw new LedgerAlreadyExistsException(ledgerDTO.getPublicKey());
@@ -85,7 +89,6 @@ public class LedgerResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-    
 
     /**
      * POST  /ledger/balance  : Returns balance of ledger.
@@ -101,7 +104,8 @@ public class LedgerResource {
     public ResponseEntity<?> checkBalance(@Valid @RequestBody Envelope envelope) throws LedgerDoesNotExistException, IOException, ClassNotFoundException {
         log.debug("REST request to check Ledger's balance : {}", envelope);
 
-        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+		Message message = this.envelopeHandler.handleIncomeEnvelope(envelope);
+		LedgerDTO ledgerDTO = (LedgerDTO) message.getContent();
 
         if (!ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
             throw new LedgerDoesNotExistException(ledgerDTO.getPublicKey());
@@ -112,7 +116,6 @@ public class LedgerResource {
                     HttpStatus.OK);
         }
     }
-
 
     /**
      * POST  /ledger/audit  : Return all operations of a ledger.
@@ -128,7 +131,8 @@ public class LedgerResource {
     public ResponseEntity<?> audit(@Valid @RequestBody Envelope envelope) throws LedgerDoesNotExistException, IOException, ClassNotFoundException {
         log.debug("REST request to check Ledger's operations : {}", envelope);
 
-        LedgerDTO ledgerDTO = (LedgerDTO) this.envelopeHandler.handleIncomeEnvelope(envelope);
+		Message message = this.envelopeHandler.handleIncomeEnvelope(envelope);
+		LedgerDTO ledgerDTO = (LedgerDTO) message.getContent();
 
         if (!ledgerService.existsLedger(ledgerDTO.getPublicKey())) {
             throw new LedgerDoesNotExistException(ledgerDTO.getPublicKey());
