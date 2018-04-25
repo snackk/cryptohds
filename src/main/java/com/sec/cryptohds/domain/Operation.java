@@ -1,9 +1,17 @@
 package com.sec.cryptohds.domain;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 public class Operation {
@@ -24,8 +32,12 @@ public class Operation {
     private Long originOperationID;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ledger_id")
+	@JoinColumn(name = "correlated_ledger_id")
     private Ledger ledger;
+
+	@Column(length = 1000000)
+	@Lob
+	private String signature;
 
     public Operation() {
     }
@@ -99,6 +111,14 @@ public class Operation {
     public void setOriginOperationID(Long originOperationID) {
         this.originOperationID = originOperationID;
     }
+
+	public String getSignature() {
+		return signature;
+	}
+
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
 
     @Override
     public boolean equals(Object o) {
