@@ -26,6 +26,8 @@ $ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 $ mvn install dockerfile:build 
 $ cd src/main/docker
 $ docker-compose -f cryptohds.yml up -d
+$ docker-compose -f cryptohds.yml up --scale cryptohds-mysql=3
+
 ```
 
 
