@@ -8,28 +8,25 @@ Before anything, the following requirements must be met:
 * **maven** - Maven must be installed in order to run the App.
 * **java 8** - Install java 8 or latest.
 * **IDE of your preference** - I prefer IntelliJ for Obvious reasons.
-* **Docker** - To create containers. 
-
-You have to create a directory named "KeyStore" under "src", this is where we store the server's keys.
+* **Docker** - To create containers.
 
 ## Running (Dev)
 
 To run the App on the terminal do the following:
 ```sh
-$ mvn clean install 
+$ mvn clean install
 $ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 ## Docker
 
 ```sh
-$ mvn install dockerfile:build 
+$ mvn install dockerfile:build
 $ cd src/main/docker
 $ docker-compose -f cryptohds.yml up -d
 $ docker-compose -f cryptohds.yml up --scale cryptohds-mysql=3
 
 ```
-
 
 ## Client (Postman)
 
@@ -50,17 +47,17 @@ $ docker-compose -f cryptohds.yml up --scale cryptohds-mysql=3
   * *endpoint:* /api/ledger/balance
   * *Type:* GET
   * *Headers:* Content-Type: application/json
-  * *Parameters:* 
-    * *key:* publicKey 
-    * *value:* pubkey_1 
+  * *Parameters:*
+    * *key:* publicKey
+    * *value:* pubkey_1
     
 ### Audit
   * *endpoint:* /api/ledger/audit
   * *Type:* GET
   * *Headers:* Content-Type: application/json
-  * *Parameters:* 
-    * *key:* publicKey 
-    * *value:* pubkey_1 
+  * *Parameters:*
+    * *key:* publicKey
+    * *value:* pubkey_1
     
 ## Operation API
 ### Send 
@@ -74,7 +71,7 @@ $ docker-compose -f cryptohds.yml up --scale cryptohds-mysql=3
     "destinationPublicKey": "pubkey_10",
     "value": "100"
 }
-```    
+```
 
 ### Receive 
   * *endpoint:* /api/operation/receive
@@ -87,3 +84,4 @@ $ docker-compose -f cryptohds.yml up --scale cryptohds-mysql=3
     "operationId": "101"
 }
 ```
+
