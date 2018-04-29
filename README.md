@@ -23,9 +23,9 @@ $ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```sh
 $ mvn install dockerfile:build
 $ cd src/main/docker
-$ docker-compose -f cryptohds.yml up -d
-$ docker-compose -f cryptohds.yml up --scale cryptohds-mysql=3
-
+$ ./cryptohds.sh 
+$ #Must have execute permission, if not run:
+$ chmod +x cryptohds.sh
 ```
 
 ## Client (Postman)
