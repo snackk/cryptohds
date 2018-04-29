@@ -1,6 +1,7 @@
 KeyStore/
 target/
 .mvn/wrapper/
+docker-compose.yml
 
 ### STS ###
 .apt_generated
