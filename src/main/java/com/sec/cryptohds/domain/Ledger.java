@@ -1,10 +1,10 @@
 package com.sec.cryptohds.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class Ledger {
@@ -22,9 +22,6 @@ public class Ledger {
     private Long balance;
     
     private int seqNumber;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Operation> operations = new ArrayList<>();
 
     public Ledger() {
         this.balance = 90L;
@@ -69,22 +66,12 @@ public class Ledger {
         this.name = name;
     }
 
-
     public Long getBalance() {
         return balance;
     }
 
     public void setBalance(Long balance) {
         this.balance = balance;
-    }
-
-    public void addOperation(Operation operation) {
-        this.operations.add(operation);
-    }
-
-    @JsonIgnore
-    public List<Operation> getOperations() {
-        return this.operations;
     }
 
     @Override
@@ -94,5 +81,12 @@ public class Ledger {
                 "id=%d, " +
                 "name=%s]",
                 publicKey, id, name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Ledger )) return false;
+        return id != null && id.equals(((Ledger) o).id);
     }
 }

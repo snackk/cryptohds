@@ -1,17 +1,16 @@
 package com.sec.cryptohds;
 
-import com.sec.cryptohds.domain.Ledger;
-import com.sec.cryptohds.domain.Operation;
-import com.sec.cryptohds.service.LedgerService;
-import com.sec.cryptohds.service.OperationService;
-import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
-import com.sec.cryptohdslibrary.service.dto.OperationDTO;
+//import com.sec.cryptohdslibrary.service.dto.LedgerDTO;
+//import com.sec.cryptohdslibrary.service.dto.OperationDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import com.sec.cryptohds.service.LedgerService;
+import com.sec.cryptohds.service.OperationService;
 
 @SpringBootApplication
 public class CryptohdsApplication {
@@ -40,15 +39,15 @@ public class CryptohdsApplication {
 //				operationService.createOperation(new OperationDTO("pubkey_1", "pubkey_10",10L));
 //			}
 
-			log.info("Ledgers found with findLedgers():");
-			log.info("-------------------------------");
-			for (Ledger ledger : ledgerService.findLedgers()) {
-				log.info(ledger.toString());
-				for (Operation operation: ledger.getOperations()) {
-					log.info("    ->" + operation.toString());
-				}
-			}
-			log.info("-------------------------------");
+			// log.info("Ledgers found with findLedgers():");
+			// log.info("-------------------------------");
+			// for (Ledger ledger : ledgerService.findLedgers()) {
+			// log.info(ledger.toString());
+			// for (Operation operation: ledger.getOperations()) {
+			// log.info("    ->" + operation.toString());
+			// }
+			// }
+			// log.info("-------------------------------");
 		};
 	}
 }

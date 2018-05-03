@@ -20,14 +20,12 @@ public class EnvelopeHandler {
 
     private final LedgerService ledgerService;
 
-    public EnvelopeHandler(ServerKeyStore serverKeyStore,
-                           LedgerService ledgerService) {
+    public EnvelopeHandler(ServerKeyStore serverKeyStore, LedgerService ledgerService) {
         this.serverKeyStore = serverKeyStore;
         this.ledgerService = ledgerService;
     }
 
-	public Message handleIncomeEnvelope(Envelope envelope)
-			throws IOException, ClassNotFoundException, CryptohdsException {
+	public Message handleIncomeEnvelope(Envelope envelope) throws IOException, ClassNotFoundException, CryptohdsException {
         Message message = envelope.decipherEnvelope(this.serverKeyStore.getKeyStore());
 
         /*Verify if Message Signature is valid*/

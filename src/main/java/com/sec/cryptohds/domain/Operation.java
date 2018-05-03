@@ -27,24 +27,28 @@ public class Operation {
 
     private Boolean committed = false;
 
-    private OperationType type;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "origin_ledger_id")
+	private Ledger originLedger;
 
-    private Long originOperationID;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "correlated_ledger_id")
-    private Ledger ledger;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "destination_ledger_id")
+	private Ledger destinationLedger;
 
 	@Column(length = 1000000)
 	@Lob
-	private String signature;
+	private String originSignature;
+
+	@Column(length = 1000000)
+	@Lob
+	private String destinationSignature;
 
     public Operation() {
     }
 
-    public Operation(Ledger ledger, OperationType operationType, Long value) {
-        this.ledger = ledger;
-        this.type = operationType;
+	public Operation(Ledger originLedger, Ledger destinationLedger, Long value) {
+		this.originLedger = originLedger;
+		this.destinationLedger = destinationLedger;
         this.value = value;
     }
 
@@ -72,7 +76,7 @@ public class Operation {
         this.value = value;
     }
 
-    public Boolean getCommitted() {
+	public Boolean isCommitted() {
         return committed;
     }
 
@@ -80,44 +84,41 @@ public class Operation {
         this.committed = committed;
     }
 
-    public OperationType getType() {
-        return type;
-    }
-
-    public void setType(OperationType type) {
-        this.type = type;
-    }
-
-
-    public Ledger getLedger() {
-        return ledger;
-    }
-
-    public void setLedger(Ledger ledger) {
-        this.ledger = ledger;
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                "Operation[id=%d]",
-                id);
-    }
-
-    public Long getOriginOperationID() {
-        return originOperationID;
-    }
-
-    public void setOriginOperationID(Long originOperationID) {
-        this.originOperationID = originOperationID;
-    }
-
-	public String getSignature() {
-		return signature;
+	public Ledger getOriginLedger() {
+		return originLedger;
 	}
 
-	public void setSignature(String signature) {
-		this.signature = signature;
+	public void setOriginLedger(Ledger originLedger) {
+		this.originLedger = originLedger;
+    }
+
+	public Ledger getDestinationLedger() {
+		return destinationLedger;
+    }
+
+	public void setDestinationLedger(Ledger destinationLedger) {
+		this.destinationLedger = destinationLedger;
+    }
+
+	public String getOriginSignature() {
+		return originSignature;
+	}
+
+	public void setOriginSignature(String originSignature) {
+		this.originSignature = originSignature;
+	}
+
+	public String getDestinationSignature() {
+		return destinationSignature;
+	}
+
+	public void setDestinationSignature(String destinationSignature) {
+		this.destinationSignature = destinationSignature;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Operation[id=%d]", id);
 	}
 
     @Override
