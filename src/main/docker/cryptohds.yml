@@ -8,8 +8,7 @@ services:
             - SPRING_DATASOURCE_URL=jdbc:mysql://cryptohds-mysql_X_:3306/cryptohds?useUnicode=true&characterEncoding=utf8&useSSL=false
             - SPRING_DATASOURCE_USERNAME=root
             - SPRING_DATASOURCE_PASSWORD=cryptohds
-        ports:
-            - 808_X_:8080
+
     cryptohds-mysql_X_:
         extends:
             file: mysql.yml
