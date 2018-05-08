@@ -9,7 +9,7 @@ services:
             - SPRING_DATASOURCE_USERNAME=root
             - SPRING_DATASOURCE_PASSWORD=cryptohds
         ports:
-            - 8080:808X
+            - 808X:8080
     cryptohds-mysqlX:
         extends:
             file: mysql.yml
