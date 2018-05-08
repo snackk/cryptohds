@@ -19,7 +19,7 @@ docker_compose_final="version: '2'\nservices:"
 
 while [ $instances -gt 0 ]
 do
-    temp="${docker_compose//X/$instances}"
+    temp="${docker_compose//_X_/$instances}"
     docker_compose_final+='\n'
     docker_compose_final+="$temp"
     ((instances--))
