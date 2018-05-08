@@ -1,17 +1,16 @@
 version: '2'
 services:
-    cryptohdsX:
+    cryptohds_X_:
         image: cryptohds:cryptohds-2.0.0-SNAPSHOT
         environment:
             - APP_SLEEP=10 # gives time for the database to boot before the application
             - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.jdbc.Driver
-            - SPRING_DATASOURCE_URL=jdbc:mysql://cryptohds-mysqlX:3306/cryptohds?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - SPRING_DATASOURCE_URL=jdbc:mysql://cryptohds-mysql_X_:3306/cryptohds?useUnicode=true&characterEncoding=utf8&useSSL=false
             - SPRING_DATASOURCE_USERNAME=root
             - SPRING_DATASOURCE_PASSWORD=cryptohds
         ports:
-            - 808X:8080
-    cryptohds-mysqlX:
+            - 808_X_:8080
+    cryptohds-mysql_X_:
         extends:
             file: mysql.yml
             service: cryptohds-mysql
-
