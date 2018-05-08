@@ -24,8 +24,36 @@ $ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 $ mvn install dockerfile:build
 $ cd src/main/docker
 $ ./cryptohds.sh 
-$ #Must have execute permission, if not run:
+$ # Must have execute permission, if not run:
 $ chmod +x cryptohds.sh
+```
+
+### Useful commands
+
+List all containers
+```sh
+$ docker ps -a
+```
+
+List running containers
+```sh
+$ docker ps
+```
+
+List IP of a container
+```sh
+$ docker exec -it docker_cryptohds-mysql1_1 less /etc/hosts
+```
+
+Run mysql on a given container
+```sh
+$ docker exec -it docker_cryptohds-mysql1_1 mysql -u root -p
+```
+
+Stop and Remove containers
+```sh
+$ docker stop $(docker ps -a -q)
+$ docker rm $(docker ps -a -q)
 ```
 
 ## Client (Postman)
