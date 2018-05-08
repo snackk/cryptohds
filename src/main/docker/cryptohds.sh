@@ -19,14 +19,7 @@ docker_compose_final="version: '2'\nservices:"
 
 while [ $instances -gt 0 ]
 do
-    cryptohds='cryptohds'
-    cryptohds+=$instances
-    cryptohds_mysql='cryptohds-mysql'
-    cryptohds_mysql+=$instances
-
-    temp="$(echo -e ${docker_compose/cryptohdsX/$cryptohds})"
-    temp="$(echo -e ${temp/cryptohds-mysqlX/$cryptohds_mysql})"
-    temp="$(echo -e ${temp/cryptohds-mysqlX/$cryptohds_mysql})"
+    temp="${docker_compose//X/$instances}"
     docker_compose_final+='\n'
     docker_compose_final+="$temp"
     ((instances--))
@@ -34,4 +27,5 @@ done
 
 echo -e $docker_compose_final > docker-compose.yml
 
-docker-compose up -d
+exec docker-compose up -d
+
