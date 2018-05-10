@@ -23,7 +23,7 @@ $ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```sh
 $ mvn install dockerfile:build
 $ cd src/main/docker
-$ ./cryptohds.sh 
+$ ./cryptohds.sh <number of replicas>
 $ # Must have execute permission, if not run:
 $ chmod +x cryptohds.sh
 ```
