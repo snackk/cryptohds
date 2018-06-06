@@ -113,3 +113,4 @@ $ docker rm $(docker ps -a -q)
 }
 ```
 
+  Written by [@snackk](https://github.com/snackk)
